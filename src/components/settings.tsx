@@ -5,9 +5,27 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Clock, Settings as SettingsIcon, Bell, Volume2, Moon, Sun, Globe, Layout, Quote } from "lucide-react"
+import {
+  Dialog,
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { TimerSettings } from "@/components/timer-settings"
+import {
+  Clock,
+  Settings as SettingsIcon,
+  Bell,
+  Volume2,
+  Moon,
+  Sun,
+  Globe,
+  Layout,
+  Quote,
+} from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "next-themes"
 import { Separator } from "@radix-ui/react-dropdown-menu"
@@ -20,11 +38,11 @@ export function Settings() {
     autoSave: true,
     compactMode: false,
     showMotivationalQuotes: true,
-    language: 'en',
+    language: "en",
   })
 
   const toggleSetting = (key: keyof typeof settings) => {
-    setSettings(prev => ({ ...prev, [key]: !prev[key] }))
+    setSettings((prev) => ({ ...prev, [key]: !prev[key] }))
   }
 
   return (
@@ -35,58 +53,89 @@ export function Settings() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => toggleSetting('notifications')}
+        <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => toggleSetting("notifications")}
         >
-          <Bell size={16} className={settings.notifications ? 'text-primary' : ''} />
+          <Bell
+            size={16}
+            className={settings.notifications ? "text-primary" : ""}
+          />
           Notifications
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => toggleSetting('soundEffects')}
+        <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => toggleSetting("soundEffects")}
         >
-          <Volume2 size={16} className={settings.soundEffects ? 'text-primary' : ''} />
+          <Volume2
+            size={16}
+            className={settings.soundEffects ? "text-primary" : ""}
+          />
           Sound Effects
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => toggleSetting('showMotivationalQuotes')}
+        {/* <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => toggleSetting("showMotivationalQuotes")}
         >
-          <Quote size={16} className={settings.showMotivationalQuotes ? 'text-primary' : ''} />
+          <Quote
+            size={16}
+            className={settings.showMotivationalQuotes ? "text-primary" : ""}
+          />
           Motivational Quotes
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => toggleSetting('compactMode')}
+        <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => toggleSetting("compactMode")}
         >
-          <Layout size={16} className={settings.compactMode ? 'text-primary' : ''} />
+          <Layout
+            size={16}
+            className={settings.compactMode ? "text-primary" : ""}
+          />
           Compact Mode
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <Separator />
-        
-        {/* <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => setTheme('light')}
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <DropdownMenuItem
+              className="gap-2 cursor-pointer"
+              onSelect={(event) => event.preventDefault()}
+            >
+              <Clock size={16} />
+              Timer Settings
+            </DropdownMenuItem>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Timer Settings</DialogTitle>
+            </DialogHeader>
+            <TimerSettings />
+          </DialogContent>
+        </Dialog>
+
+        {/* <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => setTheme("light")}
         >
-          <Sun size={16} className={theme === 'light' ? 'text-primary' : ''} />
+          <Sun size={16} className={theme === "light" ? "text-primary" : ""} />
           Light Mode
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          className="gap-2 cursor-pointer" 
-          onClick={() => setTheme('dark')}
+        <DropdownMenuItem
+          className="gap-2 cursor-pointer"
+          onClick={() => setTheme("dark")}
         >
-          <Moon size={16} className={theme === 'dark' ? 'text-primary' : ''} />
+          <Moon size={16} className={theme === "dark" ? "text-primary" : ""} />
           Dark Mode
         </DropdownMenuItem> */}
 
         <Separator />
 
-        <DropdownMenuItem className="gap-2">
+        {/* <DropdownMenuItem className="gap-2">
           <Globe size={16} />
           Language
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
       </DropdownMenuContent>
     </DropdownMenu>
   )

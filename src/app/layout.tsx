@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "LucidFlow - AI Study Assistant",
   description: "Your personal AI-powered study companion",
+  icons: {
+    icon: "/logo.svg"
+  },
 }
 
 export default function RootLayout({
