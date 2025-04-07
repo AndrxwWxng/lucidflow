@@ -1,7 +1,7 @@
 import { Groq } from "groq-sdk";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: { json: () => any; }) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { messages } = body;
