@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LucidFlow 🧠✨🌊
 
-## Getting Started
+Your personal AI-powered study companion!
 
-First, run the development server:
+LucidFlow is a comprehensive web application designed as an all-in-one dashboard to enhance your study sessions. It combines AI assistance, task management, planning, note-taking, and focus tools into a single, streamlined interface.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Core Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **AI Study Assistant 🤖:** Get explanations and answers to your study questions via a chat interface (powered by Groq ⚡).
+*   **Study Tasks ✅:** Manage your learning workflow with a dedicated Kanban board (To Do, In Progress, Done).
+*   **Focus Timer ⏱️:** Utilize a built-in Pomodoro timer (e.g., 25 minutes) to structure focused study intervals.
+*   **Study Planner 🗓️:** Schedule and track upcoming study sessions by subject, topic, and duration. View completed sessions and stats.
+*   **Study Notes 📝:** Create, edit, categorize, search, and sort rich study notes within the app.
+*   **Study Music 🎵:** Integrate and control Spotify playlists directly within the app to set the mood for studying.
+*   **Calculator 🧮:** Perform quick calculations without leaving the app.
+*   **Customization:** Includes Dark/Light mode toggle 🌙/☀️ and settings access.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Framework:** Next.js (App Router)
+*   **Language:** TypeScript / React
+*   **Styling:** Tailwind CSS
+*   **AI Inference:** Groq
 
-## Learn More
+## 🚀 Live Demo
 
-To learn more about Next.js, take a look at the following resources:
+Check out the live version of LucidFlow here:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+➡️ **https://lucidflow.vercel.app/** ⬅️
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🤔 How to Use
 
-## Deploy on Vercel
+1.  Start a focused study session using the **Focus Timer**.
+2.  Ask questions or request explanations from the **AI Study Assistant**.
+3.  Add and manage tasks on the **Study Tasks** Kanban board.
+4.  Plan future study blocks with the **Study Planner**.
+5.  Capture key information in the **Study Notes** section.
+6.  Link a Spotify playlist URL under **Study Music** to listen while you work.
+7.  Use the **Calculator** for any quick math needs.
+8.  Customize your view using the **Dark/Light mode** toggle.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🌱 Future Ideas
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*   Implement persistence for tasks, notes, and planner sessions (e.g., using local storage or a database).
+*   Add full Spotify API integration for searching playlists within the app.
+*   Develop the "Stats" tab in the Study Planner.
+*   Refine AI capabilities (e.g., summarizing notes, generating quizzes from notes).
+*   Implement user authentication.
+
+---
+
+Happy Learning! 😊
