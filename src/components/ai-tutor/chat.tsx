@@ -58,7 +58,7 @@ export function AiTutorChat() {
   }
 
   return (
-    <div className="glass-effect flex flex-col h-[600px] rounded-lg">
+    <div className="glass-effect flex flex-col h-[400px] rounded-lg">
       <div className="flex-1 overflow-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-secondary">
         {messages.map((message, i) => (
           <div

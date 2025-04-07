@@ -66,7 +66,7 @@ export function Settings() {
 
         <Separator />
         
-        <DropdownMenuItem 
+        {/* <DropdownMenuItem 
           className="gap-2 cursor-pointer" 
           onClick={() => setTheme('light')}
         >
@@ -79,7 +79,7 @@ export function Settings() {
         >
           <Moon size={16} className={theme === 'dark' ? 'text-primary' : ''} />
           Dark Mode
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <Separator />
 

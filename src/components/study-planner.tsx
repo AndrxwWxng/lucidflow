@@ -1,114 +1,383 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from './ui/button'
-import { Calendar, Clock, Plus } from 'lucide-react'
+import { Input } from './ui/input'
+import { Select } from './ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs'
+import { Calendar, Clock, Pencil, Plus, Target, Trash2, BookOpen } from 'lucide-react'
+import { Progress } from './ui/progress'
+import { Badge } from './ui/badge'
 
 interface StudySession {
   id: string
   subject: string
+  topic: string
   duration: number
   date: string
+  completed: boolean
+  color: string
 }
+
+const subjectColors = [
+  "bg-blue-500/20 text-blue-500 border-blue-500/40",
+  "bg-purple-500/20 text-purple-500 border-purple-500/40",
+  "bg-green-500/20 text-green-500 border-green-500/40",
+  "bg-amber-500/20 text-amber-500 border-amber-500/40",
+  "bg-pink-500/20 text-pink-500 border-pink-500/40",
+  "bg-cyan-500/20 text-cyan-500 border-cyan-500/40",
+  "bg-red-500/20 text-red-500 border-red-500/40"
+];
 
 export function StudyPlanner() {
   const [sessions, setSessions] = useState<StudySession[]>([])
   const [subject, setSubject] = useState('')
+  const [topic, setTopic] = useState('')
   const [duration, setDuration] = useState(30)
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [activeTab, setActiveTab] = useState('upcoming')
+  const [subjectStats, setSubjectStats] = useState<{[key: string]: {minutes: number, sessions: number}}>({})
+  const [editingId, setEditingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const savedSessions = localStorage.getItem('studySessions');
+    if (savedSessions) {
+      setSessions(JSON.parse(savedSessions));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('studySessions', JSON.stringify(sessions));
+    
+    const stats: {[key: string]: {minutes: number, sessions: number}} = {};
+    sessions.forEach(session => {
+      if (!stats[session.subject]) {
+        stats[session.subject] = { minutes: 0, sessions: 0 };
+      }
+      stats[session.subject].minutes += session.completed ? session.duration : 0;
+      stats[session.subject].sessions += session.completed ? 1 : 0;
+    });
+    setSubjectStats(stats);
+  }, [sessions]);
 
   const addSession = () => {
-    if (!subject.trim()) return
+    if (!subject.trim()) return;
     
-    const newSession: StudySession = {
-      id: Date.now().toString(),
-      subject,
-      duration,
-      date,
+    let subjectColor = "";
+    const existingSubject = sessions.find(s => s.subject === subject);
+    
+    if (existingSubject) {
+      subjectColor = existingSubject.color;
+    } else {
+      const existingSubjects = [...new Set(sessions.map(s => s.subject))];
+      const colorIndex = existingSubjects.length % subjectColors.length;
+      subjectColor = subjectColors[colorIndex];
     }
     
-    setSessions([...sessions, newSession])
-    setSubject('')
+    const newSession: StudySession = {
+      id: editingId || Date.now().toString(),
+      subject,
+      topic,
+      duration,
+      date,
+      completed: false,
+      color: subjectColor
+    }
+    
+    if (editingId) {
+      setSessions(sessions.map(s => s.id === editingId ? newSession : s));
+      setEditingId(null);
+    } else {
+      setSessions([...sessions, newSession]);
+    }
+    
+    setSubject('');
+    setTopic('');
+  }
+
+  const editSession = (session: StudySession) => {
+    setSubject(session.subject);
+    setTopic(session.topic);
+    setDuration(session.duration);
+    setDate(session.date);
+    setEditingId(session.id);
+  }
+
+  const deleteSession = (id: string) => {
+    setSessions(sessions.filter(s => s.id !== id));
+  }
+
+  const toggleComplete = (id: string) => {
+    setSessions(sessions.map(s => 
+      s.id === id ? {...s, completed: !s.completed} : s
+    ));
+  }
+
+  const getFilteredSessions = () => {
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (activeTab === 'upcoming') {
+      return sessions
+        .filter(s => !s.completed && s.date >= today)
+        .sort((a, b) => a.date.localeCompare(b.date));
+    } else if (activeTab === 'completed') {
+      return sessions
+        .filter(s => s.completed)
+        .sort((a, b) => b.date.localeCompare(a.date));
+    } else {
+      return [];
+    }
+  }
+
+  const getTotalPlannedMinutes = () => {
+    return sessions.reduce((total, session) => total + session.duration, 0);
+  }
+
+  const getTotalCompletedMinutes = () => {
+    return sessions
+      .filter(session => session.completed)
+      .reduce((total, session) => total + session.duration, 0);
   }
 
   return (
-    <div className="space-y-6">
-      <div className="glass-effect p-4 rounded-lg space-y-4">
-        <input
-          type="text"
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          placeholder="Enter subject name..."
-          className="w-full rounded-md bg-secondary px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        />
-        <div className="flex gap-2">
-          <div className="flex-1">
-            <label className="text-sm font-medium mb-1.5 block text-muted-foreground">
-              Date
-            </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full rounded-md bg-secondary px-3 py-2 text-sm"
-            />
-          </div>
-          <div className="w-32">
-            <label className="text-sm font-medium mb-1.5 block text-muted-foreground">
-              Duration
-            </label>
-            <select
-              value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full rounded-md bg-secondary px-3 py-2 text-sm"
-            >
-              <option value={15}>15 min</option>
-              <option value={30}>30 min</option>
-              <option value={45}>45 min</option>
-              <option value={60}>1 hour</option>
-              <option value={90}>1.5 hours</option>
-              <option value={120}>2 hours</option>
-            </select>
-          </div>
-        </div>
-        <Button onClick={addSession} className="w-full gap-2">
-          <Plus size={16} />
-          Add Study Session
-        </Button>
-      </div>
-      
-      <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
-        {sessions.map(session => (
-          <div key={session.id} className="glass-effect p-4 rounded-lg flex items-center justify-between group">
-            <div>
-              <h4 className="font-medium text-lg">{session.subject}</h4>
-              <div className="text-sm text-muted-foreground flex items-center gap-3 mt-1">
-                <span className="flex items-center gap-1.5">
-                  <Calendar size={14} />
-                  {new Date(session.date).toLocaleDateString()}
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Clock size={14} />
-                  {session.duration} min
-                </span>
+    <div className="space-y-4">
+      <Tabs defaultValue="upcoming" value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-3 mb-4">
+          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
+          <TabsTrigger value="stats">Stats</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="upcoming" className="space-y-4">
+          <div className="glass-effect p-3 rounded-lg space-y-3 bg-card/30">
+            <div className="flex gap-2">
+              <Input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Subject"
+                className="flex-1 bg-background/50"
+              />
+              <Input
+                type="text"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="Topic (optional)"
+                className="flex-1 bg-background/50"
+              />
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Calendar size={14} className="text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Date</span>
+                </div>
+                <Input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="bg-background/50"
+                />
+              </div>
+              <div className="w-24">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Clock size={14} className="text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Minutes</span>
+                </div>
+                <select
+                  value={duration}
+                  onChange={(e) => setDuration(Number(e.target.value))}
+                  className="w-full h-10 rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background"
+                >
+                  <option value={15}>15</option>
+                  <option value={30}>30</option>
+                  <option value={45}>45</option>
+                  <option value={60}>60</option>
+                  <option value={90}>90</option>
+                  <option value={120}>120</option>
+                </select>
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSessions(sessions.filter(s => s.id !== session.id))}
-              className="opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              Remove
+            <Button onClick={addSession} className="w-full gap-2">
+              {editingId ? (
+                <>
+                  <Pencil size={14} />
+                  Update Session
+                </>
+              ) : (
+                <>
+                  <Plus size={14} />
+                  Add Session
+                </>
+              )}
             </Button>
           </div>
-        ))}
-        {sessions.length === 0 && (
-          <div className="text-center text-muted-foreground py-8">
-            No study sessions planned yet
+          
+          <div className="space-y-2 max-h-[240px] overflow-y-auto pr-1">
+            {getFilteredSessions().map(session => (
+              <div 
+                key={session.id} 
+                className="glass-effect p-3 rounded-lg flex items-center justify-between group border-l-4 hover:bg-card/40 transition-colors"
+                style={{ borderLeftColor: session.color.split(' ')[2].split('-')[0] }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className={`${session.color} text-xs px-2 py-0.5`}>
+                      {session.subject}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(session.date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-sm truncate">
+                        {session.topic || "General study"}
+                      </h4>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock size={12} />
+                        {session.duration} min
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComplete(session.id)}
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <BookOpen size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editSession(session)}
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Pencil size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteSession(session.id)}
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {getFilteredSessions().length === 0 && (
+              <div className="text-center text-muted-foreground py-6">
+                No upcoming study sessions
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </TabsContent>
+        
+        <TabsContent value="completed" className="space-y-3">
+          <div className="space-y-2 max-h-[325px] overflow-y-auto pr-1">
+            {getFilteredSessions().map(session => (
+              <div 
+                key={session.id} 
+                className="glass-effect p-3 rounded-lg flex items-center justify-between group border-l-4 hover:bg-card/40 transition-colors"
+                style={{ borderLeftColor: session.color.split(' ')[2].split('-')[0] }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className={`${session.color} text-xs px-2 py-0.5`}>
+                      {session.subject}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(session.date).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric' 
+                      })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-sm truncate">
+                        {session.topic || "General study"}
+                      </h4>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock size={12} />
+                        {session.duration} min
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleComplete(session.id)}
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Target size={14} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteSession(session.id)}
+                        className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive"
+                      >
+                        <Trash2 size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {getFilteredSessions().length === 0 && (
+              <div className="text-center text-muted-foreground py-6">
+                No completed study sessions
+              </div>
+            )}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="stats" className="space-y-4">
+          <div className="glass-effect p-4 rounded-lg bg-card/30">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-medium">Study Progress</h3>
+              <span className="text-sm">
+                {getTotalCompletedMinutes()} / {getTotalPlannedMinutes()} min
+              </span>
+            </div>
+            <Progress 
+              value={(getTotalCompletedMinutes() / Math.max(getTotalPlannedMinutes(), 1)) * 100} 
+              className="h-2" 
+            />
+            
+            <div className="mt-6 space-y-4">
+              <h3 className="font-medium text-sm">Subject Breakdown</h3>
+              <div className="space-y-3">
+                {Object.entries(subjectStats).map(([subject, data]) => (
+                  <div key={subject} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span>{subject}</span>
+                      <span>{data.minutes} min ({data.sessions} sessions)</span>
+                    </div>
+                    <Progress 
+                      value={(data.minutes / Math.max(getTotalCompletedMinutes(), 1)) * 100} 
+                      className="h-1.5" 
+                    />
+                  </div>
+                ))}
+                {Object.keys(subjectStats).length === 0 && (
+                  <div className="text-center text-muted-foreground py-3">
+                    No data available yet
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

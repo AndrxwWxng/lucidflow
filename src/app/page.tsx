@@ -1,13 +1,22 @@
-import { AiTutorChat } from '@/components/ai-tutor/chat'
-import { KanbanBoard } from '@/components/kanban/board'
-import { PomodoroTimer } from '@/components/pomodoro/timer'
-import { ModeToggle } from '@/components/mode-toggle'
-import { Settings } from '@/components/settings'
-import { SpotifyPlayer } from '@/components/spotify-player'
-import { Calculator } from '@/components/calculator'
-import { StudyPlanner } from '@/components/study-planner'
-import { Notes } from '@/components/notes'
-import { Brain, Clock, Music, ListTodo, Bot, Calculator as CalcIcon, FileText, Calendar } from 'lucide-react'
+import { AiTutorChat } from "@/components/ai-tutor/chat";
+import { KanbanBoard } from "@/components/kanban/board";
+import { PomodoroTimer } from "@/components/pomodoro/timer";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Settings } from "@/components/settings";
+import { SpotifyPlayer } from "@/components/spotify-player";
+import { Calculator } from "@/components/calculator";
+import { StudyPlanner } from "@/components/study-planner";
+import { Notes } from "@/components/notes"; 
+import {
+  Brain,
+  Clock,
+  Music,
+  ListTodo,
+  Bot,
+  Calculator as CalcIcon,
+  FileText,
+  Calendar,
+} from "lucide-react";
 
 export default function Home() {
   return (
@@ -16,9 +25,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto py-4 px-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Brain size={32} className="text-cyan-400 animate-float" />
-            <h1 className="text-3xl font-bold gradient-text">
-              LucidFlow
-            </h1>
+            <h1 className="text-3xl font-bold gradient-text">LucidFlow</h1>
           </div>
           <div className="flex items-center gap-4">
             <Settings />
@@ -29,6 +36,7 @@ export default function Home() {
 
       <main className="max-w-7xl mx-auto py-8 px-4">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
+
           <div className="xl:col-span-3 space-y-8">
             <div>
               <h2 className="text-xl font-semibold mb-4 text-foreground/80 flex items-center gap-2">
@@ -37,19 +45,13 @@ export default function Home() {
               </h2>
               <PomodoroTimer />
             </div>
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-foreground/80 flex items-center gap-2">
-                <Music size={20} className="text-primary" />
-                Study Music
-              </h2>
-              <SpotifyPlayer />
-            </div>
+
             <div>
               <h2 className="text-xl font-semibold mb-4 text-foreground/80 flex items-center gap-2">
                 <CalcIcon size={20} className="text-primary" />
                 Calculator
               </h2>
-              <div className="glass-effect p-4 rounded-lg">
+              <div className="p-4 rounded-lg bg-card border shadow-sm">
                 <Calculator />
               </div>
             </div>
@@ -68,7 +70,7 @@ export default function Home() {
                 <Calendar size={20} className="text-primary" />
                 Study Planner
               </h2>
-              <div className="glass-effect p-4 rounded-lg">
+              <div className="p-4 rounded-lg bg-card border shadow-sm">
                 <StudyPlanner />
               </div>
             </div>
@@ -82,18 +84,25 @@ export default function Home() {
               </h2>
               <AiTutorChat />
             </div>
+
             <div>
               <h2 className="text-xl font-semibold mb-4 text-foreground/80 flex items-center gap-2">
-                <FileText size={20} className="text-primary" />
-                Study Notes
+                <Music size={20} className="text-primary" />
+                Study Music
               </h2>
-              <div className="glass-effect p-4 rounded-lg">
-                <Notes />
-              </div>
+              <SpotifyPlayer />
             </div>
           </div>
         </div>
+
+        <div className="mt-12">
+          <h2 className="text-xl font-semibold mb-4 text-foreground/80 flex items-center gap-2">
+            <FileText size={20} className="text-primary" />
+            Study Notes
+          </h2>
+          <Notes />
+        </div>
       </main>
     </div>
-  )
+  );
 }
