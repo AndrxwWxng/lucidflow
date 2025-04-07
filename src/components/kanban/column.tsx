@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { Button } from '../ui/button'
 import { KanbanTask } from './task'
-import { ChevronRightIcon } from 'lucide-react'
+import { ArrowLeft, ChevronRightIcon } from 'lucide-react'
 
 interface Task {
   id: string
@@ -10,20 +10,23 @@ interface Task {
 }
 
 interface KanbanColumnProps {
+  id: string
   title: string
   tasks: Task[]
   onStatusChange: (taskId: string) => void
+  onMoveBack: (taskId: string) => void
+  showMoveBack: boolean
 }
 
-export function KanbanColumn({ title, tasks, onStatusChange }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, tasks, onStatusChange, onMoveBack, showMoveBack }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
-    id: title,
+    id,
   })
 
   return (
     <div
       ref={setNodeRef}
-      className="glass-effect p-4 rounded-lg min-w-[300px] flex-1"
+      className="glass-effect p-4 rounded-lg flex-1 min-h-[200px]"
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="font-semibold">{title}</h3>
@@ -35,14 +38,26 @@ export function KanbanColumn({ title, tasks, onStatusChange }: KanbanColumnProps
         {tasks.map(task => (
           <div key={task.id} className="group relative">
             <KanbanTask task={task} />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute -right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={() => onStatusChange(task.id)}
-            >
-              <ChevronRightIcon size={16} />
-            </Button>
+            <div className="absolute -right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {showMoveBack && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onMoveBack(task.id)}
+                  className="bg-secondary/50"
+                >
+                  <ArrowLeft size={16} />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onStatusChange(task.id)}
+                className="bg-secondary/50"
+              >
+                <ChevronRightIcon size={16} />
+              </Button>
+            </div>
           </div>
         ))}
       </div>

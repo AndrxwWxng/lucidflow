@@ -10,15 +10,17 @@ interface Task {
 
 interface KanbanTaskProps {
   task: Task
+  overlay?: boolean
 }
 
-export function KanbanTask({ task }: KanbanTaskProps) {
+export function KanbanTask({ task, overlay }: KanbanTaskProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id: task.id })
 
   const style = {
@@ -26,12 +28,18 @@ export function KanbanTask({ task }: KanbanTaskProps) {
     transition,
   }
 
+  const classes = [
+    "glass-effect p-3 rounded shadow group",
+    isDragging && "opacity-50",
+    overlay && "cursor-grabbing shadow-lg scale-105",
+  ].filter(Boolean).join(" ")
+
   return (
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="glass-effect p-3 rounded shadow group"
+      className={classes}
     >
       <div className="flex items-start gap-2">
         <div

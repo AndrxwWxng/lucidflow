@@ -76,9 +76,45 @@
 }
 
 .glass-effect {
-  @apply bg-white/10 backdrop-blur-lg border border-white/20;
+  @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
 }
 
 .dark .glass-effect {
-  @apply bg-black/40 border-white/10;
+  @apply bg-black/20 border-white/5;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-secondary rounded-full;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-cyan-500 to-cyan-300 bg-clip-text text-transparent;
+}
+
+/* Spotify player theme */
+.spotify-theme {
+  @apply bg-black/30 backdrop-blur-lg border border-white/10;
+  color-scheme: dark;
 }

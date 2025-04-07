@@ -1,11 +1,11 @@
 "use client"
-import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, closestCorners } from '@dnd-kit/core'
 import { SortableContext, arrayMove } from '@dnd-kit/sortable'
 import { useState } from 'react'
 import { Button } from '../ui/button'
 import { KanbanColumn } from './column'
 import { KanbanTask } from './task'
-import { PlusIcon } from 'lucide-react'
+import { ArrowLeft, PlusIcon } from 'lucide-react'
 
 type TaskStatus = 'todo' | 'inProgress' | 'done'
 
@@ -18,20 +18,41 @@ interface Task {
 export function KanbanBoard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [activeTask, setActiveTask] = useState<Task | null>(null)
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragStart = (event: DragStartEvent) => {
+    const task = tasks.find(t => t.id === event.active.id)
+    if (task) setActiveTask(task)
+  }
+
+  const handleDragOver = (event: DragOverEvent) => {
     const { active, over } = event
     if (!over) return
 
     const activeTask = tasks.find(task => task.id === active.id)
-    const overTask = tasks.find(task => task.id === over.id)
+    if (!activeTask) return
 
-    if (!activeTask || !overTask) return
+    const overId = over.id
+    const overTask = tasks.find(task => task.id === overId)
+    const overColumn = ['todo', 'inProgress', 'done'].find(col => col === overId)
 
-    const activeIndex = tasks.indexOf(activeTask)
-    const overIndex = tasks.indexOf(overTask)
+    if (overTask) {
+      const activeIndex = tasks.indexOf(activeTask)
+      const overIndex = tasks.indexOf(overTask)
+      setTasks(arrayMove(tasks, activeIndex, overIndex))
+    } else if (overColumn && activeTask.status !== overColumn) {
+      setTasks(tasks.map(task => 
+        task.id === activeTask.id ? { ...task, status: overColumn as TaskStatus } : task
+      ))
+    }
+  }
 
-    setTasks(arrayMove(tasks, activeIndex, overIndex))
+  const handleDragEnd = () => {
+    setActiveTask(null)
+  }
+
+  const handleDragCancel = () => {
+    setActiveTask(null)
   }
 
   const addTask = () => {
@@ -53,42 +74,63 @@ export function KanbanBoard() {
     ))
   }
 
+  const moveTaskBack = (taskId: string) => {
+    const statusOrder: TaskStatus[] = ['todo', 'inProgress', 'done']
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        const currentIndex = statusOrder.indexOf(task.status)
+        const newStatus = statusOrder[Math.max(0, currentIndex - 1)]
+        return { ...task, status: newStatus }
+      }
+      return task
+    }))
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2 p-4">
-        <input
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="New task..."
-          className="flex-1 rounded-md border p-2"
-          onKeyPress={(e) => e.key === 'Enter' && addTask()}
-        />
-        <Button onClick={addTask} className="flex items-center gap-2">
-          <PlusIcon size={16} />
-          Add Task
-        </Button>
+      <div className="glass-effect p-4 rounded-lg">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newTaskTitle}
+            onChange={(e) => setNewTaskTitle(e.target.value)}
+            placeholder="Add a new task..."
+            className="flex-1 rounded-md bg-secondary px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            onKeyPress={(e) => e.key === 'Enter' && addTask()}
+          />
+          <Button onClick={addTask} className="flex items-center gap-2">
+            <PlusIcon size={16} />
+            Add Task
+          </Button>
+        </div>
       </div>
       
-      <div className="flex gap-4 p-4">
-        <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
-          <SortableContext items={tasks.map(task => task.id)}>
-            <KanbanColumn 
-              title="To Do" 
-              tasks={tasks.filter(t => t.status === 'todo')}
-              onStatusChange={(taskId) => updateTaskStatus(taskId, 'inProgress')}
-            />
-            <KanbanColumn 
-              title="In Progress" 
-              tasks={tasks.filter(t => t.status === 'inProgress')}
-              onStatusChange={(taskId) => updateTaskStatus(taskId, 'done')}
-            />
-            <KanbanColumn 
-              title="Done" 
-              tasks={tasks.filter(t => t.status === 'done')}
-              onStatusChange={(taskId) => updateTaskStatus(taskId, 'todo')}
-            />
-          </SortableContext>
+      <div className="flex gap-4">
+        <DndContext 
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <div className="flex gap-4 w-full">
+            {(['todo', 'inProgress', 'done'] as const).map(status => (
+              <KanbanColumn 
+                key={status}
+                id={status}
+                title={status === 'todo' ? 'To Do' : status === 'inProgress' ? 'In Progress' : 'Done'}
+                tasks={tasks.filter(t => t.status === status)}
+                onStatusChange={(taskId) => {
+                  const statusOrder = ['todo', 'inProgress', 'done']
+                  const currentIndex = statusOrder.indexOf(status)
+                  const nextStatus = statusOrder[currentIndex + 1]
+                  if (nextStatus) updateTaskStatus(taskId, nextStatus as TaskStatus)
+                }}
+                onMoveBack={moveTaskBack}
+                showMoveBack={status !== 'todo'}
+              />
+            ))}
+          </div>
         </DndContext>
       </div>
     </div>
