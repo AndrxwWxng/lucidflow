@@ -43,7 +43,7 @@ export function SpotifyPlayer() {
             height="152"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
-            className="border-0"
+            className="border-0 rounded-lg block"
             style={{ colorScheme: 'dark' }}
           />
         </div>
