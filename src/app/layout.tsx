@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/logo.svg"
   },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 }
 
 export default function RootLayout({
@@ -35,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${manjari.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${manjari.variable} antialiased min-h-screen w-full overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

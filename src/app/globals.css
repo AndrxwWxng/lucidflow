@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+
   :root {
     --background: 222 47% 11%;
     --foreground: 213 31% 91%;
@@ -68,14 +74,19 @@
   .font-manjari {
     font-family: var(--font-manjari);
   }
-}
 
-@layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
+  
   body {
     @apply bg-background text-foreground;
+    font-size: 16px;
+    line-height: 1.5;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 

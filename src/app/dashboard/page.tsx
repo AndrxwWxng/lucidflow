@@ -82,22 +82,22 @@ export default function Dashboard() {
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="bg-background/10 backdrop-blur-xl border-b border-white/10 z-10 shrink-0">
           <div className="max-w-full h-12 px-4 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <h1 id="dashboard" className="text-base font-medium hidden md:block">Your Study Dashboard</h1>
-              <div className="hidden lg:flex items-center ml-6 gap-1">
+            <div className="flex items-center gap-3 min-w-0">
+              <h1 id="dashboard" className="text-base font-medium hidden md:block truncate">Your Study Dashboard</h1>
+              <div className="hidden lg:flex items-center ml-6 gap-1 flex-shrink-0">
                 <StudyTools />
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-shrink-0">
               <div className="hidden md:flex items-center">
-                <Lightbulb className="text-primary/60 w-3.5 h-3.5 mr-2" />
-                <span className="text-xs text-foreground/60 italic">Focus on one task at a time</span>
+                <Lightbulb className="text-primary/60 w-3.5 h-3.5 mr-2 flex-shrink-0" />
+                <span className="text-xs text-foreground/60 italic truncate">Focus on one task at a time</span>
               </div>
               <div className="flex items-center gap-2">
-                <Keyboard className="text-foreground/40 hover:text-foreground/60 cursor-pointer" size={16} />
+                <Keyboard className="text-foreground/40 hover:text-foreground/60 cursor-pointer flex-shrink-0" size={16} />
                 <Settings />
                 <div className="md:hidden">
                   <ModeToggle />
@@ -107,22 +107,22 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
           <main className="max-w-full p-4 md:p-5">
             <div className="mb-6 glass-card relative overflow-hidden rounded-xl">
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3"></div>
               <div className="relative z-10 p-5 md:p-6 flex flex-col md:flex-row gap-5 justify-between">
-                <div>
+                <div className="min-w-0">
                   <span className="inline-flex items-center px-2 py-0.5 text-xs rounded-full bg-primary/15 text-primary mb-3">
-                    <Sparkles size={10} className="mr-1" /> Dashboard
+                    <Sparkles size={10} className="mr-1 flex-shrink-0" /> Dashboard
                   </span>
-                  <h1 className="text-xl md:text-2xl font-bold mb-2">Welcome to your Study Space</h1>
-                  <p className="text-foreground/70 mb-4 max-w-md text-sm">
+                  <h1 className="text-xl md:text-2xl font-bold mb-2 truncate">Welcome to your Study Space</h1>
+                  <p className="text-foreground/70 mb-4 max-w-md text-sm line-clamp-2">
                     Everything you need to optimize your learning in one place. Focus on what matters most.
                   </p>
                   <div className="flex flex-wrap gap-4">
-                    <div className="flex items-center">
+                    <div className="flex items-center flex-shrink-0">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center mr-2">
                         <Clock size={14} className="text-primary" />
                       </div>
@@ -131,7 +131,7 @@ export default function Dashboard() {
                         <div className="font-medium text-sm">25:00</div>
                       </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center flex-shrink-0">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center mr-2">
                         <Workflow size={14} className="text-primary" />
                       </div>
@@ -140,7 +140,7 @@ export default function Dashboard() {
                         <div className="font-medium text-sm">3 today</div>
                       </div>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center flex-shrink-0">
                       <div className="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center mr-2">
                         <Zap size={14} className="text-primary" />
                       </div>
@@ -160,27 +160,27 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-3 min-w-0">
                 <section id="timer" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                    <Clock size={16} className="text-primary" />
-                    <span>Focus Timer</span>
+                    <Clock size={16} className="text-primary flex-shrink-0" />
+                    <span className="truncate">Focus Timer</span>
                   </h2>
                   <PomodoroTimer />
                 </section>
 
                 <section id="music" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-300">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                    <Music size={16} className="text-primary" />
-                    <span>Study Music</span>
+                    <Music size={16} className="text-primary flex-shrink-0" />
+                    <span className="truncate">Study Music</span>
                   </h2>
                   <SpotifyPlayer />
                 </section>
 
                 <section id="calculator" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-200">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
-                    <CalcIcon size={16} className="text-primary" />
-                    <span>Calculator</span>
+                    <CalcIcon size={16} className="text-primary flex-shrink-0" />
+                    <span className="truncate">Calculator</span>
                   </h2>
                   <Calculator />
                 </section>
@@ -229,10 +229,10 @@ export default function Dashboard() {
 
             <section id="tools" className="mt-6 glass-card p-5 rounded-xl motion-safe:animate-fade-in animation-delay-400">
               <h2 className="text-lg font-medium mb-4 flex items-center">
-                <Blocks size={18} className="text-primary mr-2" />
-                <span>Additional Study Tools</span>
+                <Blocks size={18} className="text-primary mr-2 flex-shrink-0" />
+                <span className="truncate">Additional Study Tools</span>
               </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 min-w-[200px]">
                 <ToolCard 
                   icon={<BookOpen size={16} />} 
                   name="Flashcards" 
