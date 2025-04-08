@@ -142,7 +142,8 @@ export function Calculator() {
             onClick={handleBackspace}
             className={getButtonClasses('special')}
           >
-            <ArrowLeft size={20} className='text-white'/>
+            ←
+            {/* <ArrowLeft size={20} className='text-white'/> */}
           </Button>
           <Button
             variant="outline"
