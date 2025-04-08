@@ -16,6 +16,9 @@ module.exports = {
   		}
   	},
   	extend: {
+      fontFamily: {
+        manjari: ['var(--font-manjari)'],
+      },
   		colors: {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',

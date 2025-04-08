@@ -64,6 +64,10 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 183 100% 37%;
   }
+
+  .font-manjari {
+    font-family: var(--font-manjari);
+  }
 }
 
 @layer base {
@@ -91,11 +95,22 @@
 }
 
 .glass-effect {
-  @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+  @apply bg-white/5 backdrop-blur-lg border border-white/10;
+  transition: all 0.3s ease;
 }
 
 .dark .glass-effect {
   @apply bg-black/20 border-white/5;
+}
+
+/* Modern minimalist card */
+.minimalist-card {
+  @apply rounded-xl border border-white/5 bg-card/10 backdrop-blur-sm;
+  transition: all 0.2s ease;
+}
+
+.minimalist-card:hover {
+  @apply border-white/10 bg-card/20;
 }
 
 /* 3D Card Flip Effect */

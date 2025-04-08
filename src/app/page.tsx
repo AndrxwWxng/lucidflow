@@ -41,7 +41,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-primary/20 blur-sm rounded-full animate-pulse"></div>
               <Brain size={32} className="text-primary relative animate-pulse-glow" />
             </div>
-            <h1 className="text-3xl font-bold gradient-text">LucidFlow</h1>
+            <h1 className="text-3xl font-bold gradient-text font-manjari">lucidflow</h1>
           </div>
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center space-x-1">
@@ -291,7 +291,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <Brain size={24} className="text-primary" />
-              <span className="text-xl font-bold gradient-text">LucidFlow</span>
+              <span className="text-xl font-bold gradient-text font-manjari">lucidflow</span>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-sm text-foreground/60">
               <Link href="#" className="hover:text-foreground transition-colors">

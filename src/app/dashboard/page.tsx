@@ -33,7 +33,6 @@ import {
   Keyboard,
   ChevronRight,
   AlertCircle,
-  Maximize2,
 } from "lucide-react";
 import { Flashcards } from "@/components/flashcards";
 import {
@@ -98,23 +97,23 @@ export default function Dashboard() {
         
         <div className="flex-1 overflow-y-auto py-3">
           <nav className="space-y-0.5 px-2">
-            <NavItem href="#dashboard" icon={<Gauge />} label="Dashboard" compact={compactSidebar} />
-            <NavItem href="#timer" icon={<Clock />} label="Focus Timer" compact={compactSidebar} />
-            <NavItem href="#tasks" icon={<Layers />} label="Study Tasks" compact={compactSidebar} />
-            <NavItem href="#ai" icon={<Bot />} label="AI Assistant" compact={compactSidebar} />
-            <NavItem href="#notes" icon={<FileText />} label="Notes" compact={compactSidebar} />
-            <NavItem href="#planner" icon={<Calendar />} label="Planner" compact={compactSidebar} />
-            <NavItem href="#music" icon={<Music />} label="Study Music" compact={compactSidebar} />
-            <NavItem href="#calculator" icon={<CalcIcon />} label="Calculator" compact={compactSidebar} />
-            <NavItem href="#tools" icon={<Blocks />} label="More Tools" compact={compactSidebar} />
+            <NavItem href="/dashboard" icon={<Gauge />} label="Dashboard" compact={compactSidebar} />
+            <NavItem href="/tools/timer" icon={<Clock />} label="Focus Timer" compact={compactSidebar} />
+            <NavItem href="/tools/tasks" icon={<Layers />} label="Study Tasks" compact={compactSidebar} />
+            <NavItem href="/tools/ai-assistant" icon={<Bot />} label="AI Assistant" compact={compactSidebar} />
+            <NavItem href="/tools/notes" icon={<FileText />} label="Notes" compact={compactSidebar} />
+            <NavItem href="/tools/planner" icon={<Calendar />} label="Planner" compact={compactSidebar} />
+            <NavItem href="/tools/music" icon={<Music />} label="Study Music" compact={compactSidebar} />
+            <NavItem href="/tools/calculator" icon={<CalcIcon />} label="Calculator" compact={compactSidebar} />
+            <NavItem href="/tools" icon={<Blocks />} label="More Tools" compact={compactSidebar} />
             
             <div className="pt-3 pb-1">
               {!compactSidebar && <div className="px-3 text-xs font-semibold text-foreground/40 uppercase tracking-wider">Insights</div>}
               <div className={compactSidebar ? 'border-t border-white/10 my-2' : ''}></div>
             </div>
             
-            <NavItem href="/tools/statistics" icon={<BarChart3 />} label="Statistics" compact={compactSidebar} />
-            <NavItem href="/tools/progress" icon={<GraduationCap />} label="Progress" compact={compactSidebar} />
+            <NavItem href="#stats" icon={<BarChart3 />} label="Statistics" compact={compactSidebar} />
+            <NavItem href="#progress" icon={<GraduationCap />} label="Progress" compact={compactSidebar} />
           </nav>
         </div>
         
@@ -212,41 +211,26 @@ export default function Dashboard() {
               {/* Left Column */}
               <div className="lg:col-span-3">
                 <section id="timer" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in">
-                  <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-base font-medium flex items-center gap-2">
-                      <Clock size={16} className="text-primary" />
-                      <span>Focus Timer</span>
-                    </h2>
-                    <Link href="/tools/timer" className="text-primary/70 hover:text-primary">
-                      <Maximize2 size={14} />
-                    </Link>
-                  </div>
+                  <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                    <Clock size={16} className="text-primary" />
+                    <span>Focus Timer</span>
+                  </h2>
                   <PomodoroTimer />
                 </section>
 
                 <section id="music" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-300">
-                  <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-base font-medium flex items-center gap-2">
-                      <Music size={16} className="text-primary" />
-                      <span>Study Music</span>
-                    </h2>
-                    <Link href="/tools/music" className="text-primary/70 hover:text-primary">
-                      <Maximize2 size={14} />
-                    </Link>
-                  </div>
+                  <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                    <Music size={16} className="text-primary" />
+                    <span>Study Music</span>
+                  </h2>
                   <SpotifyPlayer />
                 </section>
 
                 <section id="calculator" className="glass-card p-4 rounded-xl motion-safe:animate-fade-in animation-delay-200">
-                  <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-base font-medium flex items-center gap-2">
-                      <CalcIcon size={16} className="text-primary" />
-                      <span>Calculator</span>
-                    </h2>
-                    <Link href="/tools/calculator" className="text-primary/70 hover:text-primary">
-                      <Maximize2 size={14} />
-                    </Link>
-                  </div>
+                  <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                    <CalcIcon size={16} className="text-primary" />
+                    <span>Calculator</span>
+                  </h2>
                   <Calculator />
                 </section>
               </div>
@@ -254,56 +238,36 @@ export default function Dashboard() {
               {/* Middle Column */}
               <div className="lg:col-span-9">
                 <section id="tasks" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-150">
-                  <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-base font-medium flex items-center gap-2">
-                      <Layers size={16} className="text-primary" />
-                      <span>Study Tasks</span>
-                    </h2>
-                    <Link href="/tools/tasks" className="text-primary/70 hover:text-primary">
-                      <Maximize2 size={14} />
-                    </Link>
-                  </div>
+                  <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                    <Layers size={16} className="text-primary" />
+                    <span>Study Tasks</span>
+                  </h2>
                   <KanbanBoard />
                 </section>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <section id="ai" className="glass-card p-4 rounded-xl motion-safe:animate-fade-in animation-delay-100">
-                    <div className="flex justify-between items-center mb-3">
-                      <h2 className="text-base font-medium flex items-center gap-2">
-                        <Bot size={16} className="text-primary" />
-                        <span>AI Study Assistant</span>
-                      </h2>
-                      <Link href="/tools/ai-assistant" className="text-primary/70 hover:text-primary">
-                        <Maximize2 size={14} />
-                      </Link>
-                    </div>
+                    <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                      <Bot size={16} className="text-primary" />
+                      <span>AI Study Assistant</span>
+                    </h2>
                     <AiTutorChat />
                   </section>
 
                   <section id="notes" className="glass-card p-4 rounded-xl motion-safe:animate-fade-in animation-delay-350">
-                    <div className="flex justify-between items-center mb-3">
-                      <h2 className="text-base font-medium flex items-center gap-2">
-                        <FileText size={16} className="text-primary" />
-                        <span>Study Notes</span>
-                      </h2>
-                      <Link href="/tools/notes" className="text-primary/70 hover:text-primary">
-                        <Maximize2 size={14} />
-                      </Link>
-                    </div>
+                    <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                      <FileText size={16} className="text-primary" />
+                      <span>Study Notes</span>
+                    </h2>
                     <Notes />
                   </section>
                 </div>
 
                 <section id="planner" className="glass-card p-4 mt-5 rounded-xl motion-safe:animate-fade-in animation-delay-250">
-                  <div className="flex justify-between items-center mb-3">
-                    <h2 className="text-base font-medium flex items-center gap-2">
-                      <Calendar size={16} className="text-primary" />
-                      <span>Study Planner</span>
-                    </h2>
-                    <Link href="/tools/planner" className="text-primary/70 hover:text-primary">
-                      <Maximize2 size={14} />
-                    </Link>
-                  </div>
+                  <h2 className="text-base font-medium mb-3 flex items-center gap-2">
+                    <Calendar size={16} className="text-primary" />
+                    <span>Study Planner</span>
+                  </h2>
                   <StudyPlanner />
                 </section>
               </div>
