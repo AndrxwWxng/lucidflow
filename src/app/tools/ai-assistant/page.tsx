@@ -211,7 +211,6 @@ export default function AiAssistantPage() {
                     <AiTutorChat 
                       isNewChat={isNewChat} 
                       activeChatId={activeChat} 
-                      onSaveChat={(title: string) => saveChat(title)} 
                     />
                   </div>
                 </CardContent>
