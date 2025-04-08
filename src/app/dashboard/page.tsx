@@ -185,7 +185,7 @@ export default function Dashboard() {
                   <Calculator />
                 </section>
                 
-                <section id="quotes" className="h-[450px] rounded-xl motion-safe:animate-fade-in animation-delay-400">
+                <section id="quotes" className="h-[380px] rounded-xl motion-safe:animate-fade-in animation-delay-400">
                   <MotivationalQuotes />
                 </section>
               </div>
