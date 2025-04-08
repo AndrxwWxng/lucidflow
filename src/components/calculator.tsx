@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from './ui/button'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 
 export function Calculator() {
   const [display, setDisplay] = useState('0')
@@ -100,7 +100,7 @@ export function Calculator() {
     type: 'number' | 'operator' | 'special' | 'equal' | 'clear',
   ) => {
     const baseClasses =
-      'border-none font-medium h-12 px-6 text-lg rounded-lg'
+      'border-none font-medium h-12 w-full flex items-center justify-center text-lg rounded-lg'
     switch (type) {
       case 'number':
         return `${baseClasses} bg-background/50 hover:bg-background/70 dark:bg-white/5 dark:hover:bg-white/10`
@@ -129,7 +129,7 @@ export function Calculator() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 p-1">
+        <div className="grid grid-cols-4 gap-3 p-2">
           <Button
             variant="outline"
             onClick={handleClear}
@@ -143,7 +143,6 @@ export function Calculator() {
             className={getButtonClasses('special')}
           >
             ←
-            {/* <ArrowLeft size={20} className='text-white'/> */}
           </Button>
           <Button
             variant="outline"
@@ -165,7 +164,7 @@ export function Calculator() {
               key={btn}
               variant="outline"
               onClick={() =>
-                btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)
+                btn === '×' ? handleOperator('*') : handleNumber(btn)
               }
               className={getButtonClasses(
                 btn.match(/\d/) ? 'number' : 'operator',
