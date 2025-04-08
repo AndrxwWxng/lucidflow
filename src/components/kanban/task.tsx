@@ -1,6 +1,6 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Trash2, Flag } from 'lucide-react'
+import { GripVertical, Trash2, Flag, Tag } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,16 +15,32 @@ interface Task {
   status: 'todo' | 'inProgress' | 'done'
   createdAt: number
   priority?: 'low' | 'medium' | 'high'
+  tagIds?: string[]
+}
+
+interface TaskTag {
+  id: string
+  name: string
+  color: string
 }
 
 interface KanbanTaskProps {
   task: Task
   overlay?: boolean
+  tags?: TaskTag[]
   onDelete?: (taskId: string) => void
   onUpdatePriority?: (taskId: string, priority: 'low' | 'medium' | 'high') => void
+  onUpdateTags?: (taskId: string, tagIds: string[]) => void
 }
 
-export function KanbanTask({ task, overlay, onDelete, onUpdatePriority }: KanbanTaskProps) {
+export function KanbanTask({ 
+  task, 
+  overlay, 
+  tags = [], 
+  onDelete, 
+  onUpdatePriority,
+  onUpdateTags
+}: KanbanTaskProps) {
   const {
     attributes,
     listeners,
@@ -61,6 +77,37 @@ export function KanbanTask({ task, overlay, onDelete, onUpdatePriority }: Kanban
     }
   };
 
+  // Get tag color class
+  const getTagColorClass = (color: string) => {
+    switch (color) {
+      case 'red': return 'bg-red-500/10 text-red-500';
+      case 'blue': return 'bg-blue-500/10 text-blue-500';
+      case 'green': return 'bg-green-500/10 text-green-500';
+      case 'purple': return 'bg-purple-500/10 text-purple-500';
+      case 'yellow': return 'bg-yellow-500/10 text-yellow-500';
+      case 'pink': return 'bg-pink-500/10 text-pink-500';
+      case 'cyan': return 'bg-cyan-500/10 text-cyan-500';
+      default: return 'bg-gray-500/10 text-gray-500';
+    }
+  };
+
+  // Get tags for this task
+  const taskTags = task.tagIds 
+    ? tags.filter(tag => task.tagIds?.includes(tag.id))
+    : [];
+
+  // Toggle tag on this task
+  const toggleTag = (tagId: string) => {
+    if (!onUpdateTags) return;
+    
+    const currentTagIds = task.tagIds || [];
+    const newTagIds = currentTagIds.includes(tagId)
+      ? currentTagIds.filter(id => id !== tagId)
+      : [...currentTagIds, tagId];
+    
+    onUpdateTags(task.id, newTagIds);
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -79,15 +126,29 @@ export function KanbanTask({ task, overlay, onDelete, onUpdatePriority }: Kanban
         <div className="flex-1 min-w-0">
           <p className="break-words">{task.title}</p>
           
+          {taskTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2 mb-1">
+              {taskTags.map(tag => (
+                <div 
+                  key={tag.id} 
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs ${getTagColorClass(tag.color)}`}
+                >
+                  <Tag size={10} className="mr-1" />
+                  {tag.name}
+                </div>
+              ))}
+            </div>
+          )}
+          
           {task.priority && (
-            <div className={`mt-2 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${getPriorityColor()}`}>
+            <div className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs ${getPriorityColor()}`}>
               <Flag size={11} />
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority
             </div>
           )}
         </div>
         
-        {(onDelete || onUpdatePriority) && (
+        {(onDelete || onUpdatePriority || onUpdateTags) && (
           <DropdownMenu>
             <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="h-6 w-6 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center">
@@ -117,6 +178,26 @@ export function KanbanTask({ task, overlay, onDelete, onUpdatePriority }: Kanban
                   >
                     <Flag size={14} /> Low
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
+              
+              {onUpdateTags && tags.length > 0 && (
+                <>
+                  <div className="text-xs px-2 py-1 text-foreground/60">Tags</div>
+                  {tags.map(tag => (
+                    <DropdownMenuItem 
+                      key={tag.id}
+                      onClick={() => toggleTag(tag.id)}
+                      className={`gap-2 ${getTagColorClass(tag.color)}`}
+                    >
+                      <Tag size={12} />
+                      {tag.name}
+                      {task.tagIds?.includes(tag.id) && (
+                        <span className="ml-auto">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
                   <DropdownMenuSeparator />
                 </>
               )}

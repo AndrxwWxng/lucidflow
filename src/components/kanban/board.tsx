@@ -16,16 +16,32 @@ interface Task {
   status: TaskStatus
   createdAt: number
   priority?: 'low' | 'medium' | 'high'
+  tagIds?: string[]
 }
 
-export function KanbanBoard() {
+interface TaskTag {
+  id: string
+  name: string
+  color: string
+}
+
+interface KanbanBoardProps {
+  filteredTagIds?: string[]
+}
+
+export function KanbanBoard({ filteredTagIds }: KanbanBoardProps = {}) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+  const [tags, setTags] = useState<TaskTag[]>([])
 
   // Load tasks from localStorage on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedTasks = localStorage.getItem('kanban-tasks')
+    const savedTags = localStorage.getItem('studyTaskTags')
+    
     if (savedTasks) {
       try {
         setTasks(JSON.parse(savedTasks))
@@ -33,10 +49,20 @@ export function KanbanBoard() {
         console.error('Failed to parse tasks from localStorage', e)
       }
     }
+    
+    if (savedTags) {
+      try {
+        setTags(JSON.parse(savedTags))
+      } catch (e) {
+        console.error('Failed to parse tags from localStorage', e)
+      }
+    }
   }, [])
 
   // Save tasks to localStorage whenever tasks change
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     localStorage.setItem('kanban-tasks', JSON.stringify(tasks))
   }, [tasks])
 
@@ -83,7 +109,8 @@ export function KanbanBoard() {
       title: newTaskTitle,
       status: 'todo',
       createdAt: Date.now(),
-      priority: 'medium'
+      priority: 'medium',
+      tagIds: []
     }
 
     setTasks([...tasks, newTask])
@@ -117,6 +144,12 @@ export function KanbanBoard() {
       task.id === taskId ? { ...task, priority } : task
     ))
   }
+  
+  const updateTaskTags = (taskId: string, tagIds: string[]) => {
+    setTasks(tasks.map(task =>
+      task.id === taskId ? { ...task, tagIds } : task
+    ))
+  }
 
   const getTotalTasks = () => tasks.length
   const getCompletedTasks = () => tasks.filter(t => t.status === 'done').length
@@ -128,10 +161,23 @@ export function KanbanBoard() {
   const clearCompletedTasks = () => {
     setTasks(tasks.filter(task => task.status !== 'done'))
   }
+  
+  // Filter tasks based on selected tags (if provided)
+  const getFilteredTasks = (status: TaskStatus) => {
+    let filteredTasks = tasks.filter(t => t.status === status);
+    
+    if (filteredTagIds && filteredTagIds.length > 0) {
+      filteredTasks = filteredTasks.filter(task => {
+        if (!task.tagIds || task.tagIds.length === 0) return false;
+        return filteredTagIds.some(tagId => task.tagIds?.includes(tagId));
+      });
+    }
+    
+    return filteredTasks;
+  };
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Task Input and Stats */}
       <div className="glass-card p-4 rounded-lg">
         <div className="flex flex-col md:flex-row gap-3 mb-4">
           <div className="flex flex-1 gap-2">
@@ -174,7 +220,6 @@ export function KanbanBoard() {
         </div>
       </div>
       
-      {/* Kanban Columns */}
       <div className="flex flex-col md:flex-row gap-4">
         <DndContext 
           collisionDetection={closestCorners}
@@ -194,7 +239,8 @@ export function KanbanBoard() {
                 id={column.id}
                 title={column.title}
                 icon={column.icon}
-                tasks={tasks.filter(t => t.status === column.id)}
+                tasks={getFilteredTasks(column.id)}
+                tags={tags}
                 onStatusChange={(taskId) => {
                   const statusOrder = ['todo', 'inProgress', 'done']
                   const currentIndex = statusOrder.indexOf(column.id)
@@ -204,6 +250,7 @@ export function KanbanBoard() {
                 onMoveBack={moveTaskBack}
                 onDelete={deleteTask}
                 onUpdatePriority={updateTaskPriority}
+                onUpdateTags={updateTaskTags}
                 showMoveBack={column.id !== 'todo'}
               />
             ))}

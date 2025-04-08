@@ -68,9 +68,9 @@ export default function CalculatorPage() {
                   </div>
                 </div>
                 
-                <div className="glass-card p-5 rounded-xl">
+                {/* <div className=" rounded-xl">
                   <MotivationalQuotes />
-                </div>
+                </div> */}
               </div>
             </div>
           </main>

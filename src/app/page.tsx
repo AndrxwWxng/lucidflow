@@ -57,7 +57,7 @@ export default function Home() {
             </nav>
             <div className="h-6 w-[1px] bg-white/10 hidden md:block"></div>
             <Link href="/dashboard" className="mr-2">
-              <Button variant="ghost" className="font-medium hover:text-primary transition-colors">
+              <Button variant="ghost" className="font-medium hover:text-black transition-colors">
                 Dashboard
                 <ArrowUpRight size={14} className="ml-1" />
               </Button>
@@ -68,7 +68,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section with enhanced visuals */}
-      <section className="relative pt-16 md:pt-24 pb-20 md:pb-32 z-10">
+      <section className="relative pt-16 md:pt-64 pb-20 md:pb-32 z-10">
         <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
           <div className="inline-flex items-center bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-3 py-1 mb-8">
             <Sparkles size={14} className="text-primary mr-2" />
@@ -104,7 +104,7 @@ export default function Home() {
 
           {/* Floating cards preview */}
           <div className="mt-16 md:mt-24 relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-20 pointer-events-none h-full"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-20 pointer-events-none h-full rounded-b-lg"></div>
             <div className="grid grid-cols-3 gap-4 max-w-5xl mx-auto">
               <div className="glass-card p-4 rounded-xl transform hover:-translate-y-2 transition-transform md:col-span-1 opacity-90 hover:opacity-100 h-32 hidden md:flex items-center justify-center">
                 <Clock size={24} className="text-primary mr-2" />
@@ -225,19 +225,19 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <TestimonialCard
+              quote="LucidFlow is the best study tool I&apos;ve ever used. It constantly helps me stay on track and focused even when I&apos;m feeling lazy."
+              author="Sarthak M."
+              role="High School Student"
+            />
+            <TestimonialCard
               quote="LucidFlow has completely transformed how I study. The AI assistant is like having a personal tutor available 24/7."
-              author="Alex K."
-              role="Computer Science Student"
+              author="Agneya T."
+              role="High School Student"
             />
             <TestimonialCard
               quote="The Pomodoro timer and task board have doubled my productivity. I can actually see my progress and stay motivated."
-              author="Sarah M."
-              role="Medical Student"
-            />
-            <TestimonialCard
-              quote="As someone with ADHD, the focused environment and study music features have been game-changers for my ability to concentrate."
-              author="Jamie L."
-              role="Psychology Major"
+              author="Alex W."
+              role="High School Student"
             />
           </div>
         </div>
@@ -291,7 +291,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
               <Brain size={24} className="text-primary" />
-              <span className="text-xl font-bold gradient-text font-manjari">lucidflow</span>
+              <span className="pt-2 text-xl font-bold gradient-text font-manjari">lucidflow</span>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-sm text-foreground/60">
               <Link href="#" className="hover:text-foreground transition-colors">
@@ -356,7 +356,7 @@ function TestimonialCard({ quote, author, role }: {
 }) {
   return (
     <div className="rounded-xl p-6 bg-card/10 backdrop-blur-sm border border-white/5 hover:border-primary/10 transition-all duration-300">
-      <div className="text-primary mb-4">"</div>
+      <div className="text-primary mb-4">&quot;</div>
       <p className="mb-6 text-foreground/80 italic">{quote}</p>
       <div className="flex flex-col">
         <span className="font-medium">{author}</span>

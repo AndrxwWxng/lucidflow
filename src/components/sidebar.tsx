@@ -17,6 +17,7 @@ import {
   BarChart3, 
   GraduationCap, 
   PanelLeft,
+  Home
 } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,8 @@ export function Sidebar() {
   
   // Check if sidebar state is stored in localStorage
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const storedState = localStorage.getItem("sidebarCompact");
     if (storedState) {
       setCompactSidebar(storedState === "true");
@@ -43,6 +46,8 @@ export function Sidebar() {
   
   // Save sidebar state when it changes
   const toggleSidebar = () => {
+    if (typeof window === 'undefined') return;
+    
     const newState = !compactSidebar;
     setCompactSidebar(newState);
     localStorage.setItem("sidebarCompact", String(newState));
@@ -54,19 +59,11 @@ export function Sidebar() {
         compactSidebar ? 'w-[68px]' : 'w-[220px]'
       } transition-all duration-300 bg-card/30 backdrop-blur-md flex flex-col shrink-0`}
     >
-      <div className="p-4 flex items-center justify-between border-b border-white/10">
+      <div className="p-4 flex items-center justify-center border-b border-white/10">
         <div className="flex items-center gap-2">
           <Brain size={24} className="text-primary animate-pulse-slow" />
           {!compactSidebar && <h1 className="mt-2 text-lg font-bold gradient-text font-manjari">lucidflow</h1>}
         </div>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={toggleSidebar}
-          className="h-6 w-6 rounded-full opacity-70 hover:opacity-100"
-        >
-          <PanelLeft size={14} className={`transition-transform duration-200 ${compactSidebar ? 'rotate-180' : ''}`} />
-        </Button>
       </div>
       
       <div className="flex-1 overflow-y-auto py-3">
@@ -86,17 +83,31 @@ export function Sidebar() {
             <div className={compactSidebar ? 'border-t border-white/10 my-2' : ''}></div>
           </div>
           
-          <NavItem href="/stats" icon={<BarChart3 />} label="Statistics" compact={compactSidebar} active={pathname === "/stats"} />
-          <NavItem href="/progress" icon={<GraduationCap />} label="Progress" compact={compactSidebar} active={pathname === "/progress"} />
+          <NavItem href="/tools/statistics" icon={<BarChart3 />} label="Statistics" compact={compactSidebar} active={pathname === "/tools/statistics"} />
+          <NavItem href="/tools/progress" icon={<GraduationCap />} label="Progress" compact={compactSidebar} active={pathname === "/tools/progress"} />
         </nav>
       </div>
       
       <div className="p-3 border-t border-white/10 flex items-center justify-between">
-        <Link href="/" className={`flex items-center gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity ${compactSidebar ? 'justify-center w-full' : ''}`}>
-          <ChevronLeft size={14} />
-          {!compactSidebar && <span>Back to Home</span>}
-        </Link>
-        {!compactSidebar && <ModeToggle />}
+        {!compactSidebar && (
+          <Link href="/" className="flex items-center gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity">
+            <Home size={14} />
+            <span>Home</span>
+          </Link>
+        )}
+        
+        <div className="flex items-center gap-2">
+          {!compactSidebar && <ModeToggle />}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar}
+            className={`h-7 w-7 rounded-full opacity-70 hover:opacity-100 ${compactSidebar ? 'ml-auto' : ''}`}
+            title={compactSidebar ? "Expand Sidebar" : "Collapse Sidebar"}
+          >
+            <PanelLeft size={16} className={`transition-transform duration-200 ${compactSidebar ? 'rotate-180' : ''}`} />
+          </Button>
+        </div>
       </div>
     </aside>
   );

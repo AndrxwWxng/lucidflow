@@ -25,26 +25,32 @@ export function Flashcards() {
 
   // Load cards from localStorage on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedCards = localStorage.getItem('flashcards');
     if (savedCards) {
       const parsedCards = JSON.parse(savedCards);
       setCards(parsedCards);
       
       // Extract unique decks
-      const uniqueDecks = Array.from(new Set(parsedCards.map((card: Flashcard) => card.deck)));
+      const uniqueDecks = Array.from(
+        new Set<string>(parsedCards.map((card: Flashcard) => card.deck))
+      );
       setDecks(['All', ...uniqueDecks]);
     }
   }, []);
 
   // Save cards to localStorage when cards change
   useEffect(() => {
-    if (cards.length > 0) {
-      localStorage.setItem('flashcards', JSON.stringify(cards));
-      
-      // Update decks
-      const uniqueDecks = Array.from(new Set(cards.map((card) => card.deck)));
-      setDecks(['All', ...uniqueDecks]);
-    }
+    if (typeof window === 'undefined' || cards.length === 0) return;
+    
+    localStorage.setItem('flashcards', JSON.stringify(cards));
+    
+    // Update decks
+    const uniqueDecks = Array.from(
+      new Set<string>(cards.map((card) => card.deck))
+    );
+    setDecks(['All', ...uniqueDecks]);
   }, [cards]);
 
   // Filter cards by current deck

@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function TimerPage() {
   // Focus mode toggles the minimalist view
@@ -108,7 +109,7 @@ export default function TimerPage() {
           <div className="space-y-6">
             <Card className="border-white/10">
               <CardHeader>
-                <CardTitle className="text-base">Today's Focus</CardTitle>
+                <CardTitle className="text-base">Today&apos;s Focus</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -163,10 +164,12 @@ export default function TimerPage() {
               </CardContent>
             </Card>
             
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2">
-              <BarChart3 size={16} />
-              <span>View Detailed Stats</span>
-            </Button>
+            <Link href="/tools/statistics" className="w-full">
+              <Button variant="outline" className="w-full flex items-center justify-center gap-2">
+                <BarChart3 size={16} />
+                <span>View Detailed Stats</span>
+              </Button>
+            </Link>
           </div>
         </div>
       )}

@@ -32,6 +32,8 @@ export function Notes() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc')
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedNotes = localStorage.getItem('study-notes')
     if (savedNotes) {
       try {
@@ -43,6 +45,8 @@ export function Notes() {
   }, [])
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     localStorage.setItem('study-notes', JSON.stringify(notes))
   }, [notes])
 

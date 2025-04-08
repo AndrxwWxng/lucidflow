@@ -290,7 +290,7 @@ export default function FlashcardsPage() {
             <BookOpen size={48} className="mx-auto mb-4 text-primary/30" />
             <h3 className="text-lg font-medium mb-2">Recent decks will appear here</h3>
             <p className="text-sm text-foreground/60 mb-4">
-              You'll see your recently studied flashcard decks in this tab
+              You&apos;ll see your recently studied flashcard decks in this tab
             </p>
             <Button>Study Now</Button>
           </div>
@@ -301,7 +301,7 @@ export default function FlashcardsPage() {
             <CheckCircle2 size={48} className="mx-auto mb-4 text-primary/30" />
             <h3 className="text-lg font-medium mb-2">Track your mastered cards</h3>
             <p className="text-sm text-foreground/60 mb-4">
-              Cards you've mastered will be shown here to track your progress
+              Cards you&apos;ve mastered will be shown here to track your progress
             </p>
             <Button>View All Cards</Button>
           </div>

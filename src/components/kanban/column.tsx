@@ -1,7 +1,7 @@
 import { useDroppable } from '@dnd-kit/core'
 import { Button } from '../ui/button'
 import { KanbanTask } from './task'
-import { ArrowLeft, ChevronRightIcon, MoreHorizontal } from 'lucide-react'
+import { ArrowLeft, ChevronLeftIcon, ChevronRightIcon, MoreHorizontal } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +16,13 @@ interface Task {
   status: 'todo' | 'inProgress' | 'done'
   createdAt: number
   priority?: 'low' | 'medium' | 'high'
+  tagIds?: string[]
+}
+
+interface TaskTag {
+  id: string
+  name: string
+  color: string
 }
 
 interface KanbanColumnProps {
@@ -23,10 +30,12 @@ interface KanbanColumnProps {
   title: string
   icon: string
   tasks: Task[]
+  tags: TaskTag[]
   onStatusChange: (taskId: string) => void
   onMoveBack: (taskId: string) => void
   onDelete: (taskId: string) => void
   onUpdatePriority: (taskId: string, priority: 'low' | 'medium' | 'high') => void
+  onUpdateTags: (taskId: string, tagIds: string[]) => void
   showMoveBack: boolean
 }
 
@@ -35,10 +44,12 @@ export function KanbanColumn({
   title, 
   icon, 
   tasks, 
+  tags,
   onStatusChange, 
   onMoveBack, 
   onDelete,
   onUpdatePriority,
+  onUpdateTags,
   showMoveBack 
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
@@ -77,10 +88,12 @@ export function KanbanColumn({
             <div key={task.id} className="group relative">
               <KanbanTask 
                 task={task} 
+                tags={tags}
                 onDelete={onDelete} 
                 onUpdatePriority={onUpdatePriority}
+                onUpdateTags={onUpdateTags}
               />
-              <div className="absolute -right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className=" absolute -right-2 bottom-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                 {showMoveBack && (
                   <Button
                     variant="ghost"
@@ -88,7 +101,7 @@ export function KanbanColumn({
                     onClick={() => onMoveBack(task.id)}
                     className="h-6 w-6 rounded-full bg-background/70 backdrop-blur-sm hover:bg-background"
                   >
-                    <ArrowLeft size={14} />
+                    <ChevronLeftIcon size={14} />
                   </Button>
                 )}
                 <Button

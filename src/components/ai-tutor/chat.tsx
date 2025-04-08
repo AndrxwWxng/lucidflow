@@ -1,20 +1,48 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { SendHorizontal, Loader2 } from 'lucide-react'
 
-export function AiTutorChat() {
+interface AiTutorChatProps {
+  isNewChat?: boolean;
+  activeChatId?: string | null;
+  onSaveChat?: (title: string) => void;
+}
+
+export function AiTutorChat({ isNewChat = true, activeChatId = null, onSaveChat }: AiTutorChatProps) {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant', content: string }>>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedChats = JSON.parse(localStorage.getItem('aiAssistantChats') || '[]');
+    const currentChat = savedChats.find((chat: any) => chat.id === activeChatId);
+
+    if (currentChat) {
+      setMessages(currentChat.messages || []);
+    } else {
+      setMessages([]);
+    }
+    
+    if (isNewChat) {
+      const welcomeMessage = {
+        role: 'assistant' as const,
+        content: 'Hi there! I\'m your AI study assistant. How can I help you today?'
+      };
+      setMessages([welcomeMessage]);
+    }
+  }, [activeChatId, isNewChat]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
     
     const userMessage = { role: 'user' as const, content: input }
-    setMessages(prev => [...prev, userMessage])
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages)
     setInput('')
     setIsLoading(true)
 
@@ -41,11 +69,22 @@ export function AiTutorChat() {
       }
 
       const data = await response.json();
+      const assistantMessage = { role: 'assistant' as const, content: data.content };
+      const updatedMessages = [...newMessages, assistantMessage];
       
-      setMessages(prev => [
-        ...prev,
-        { role: 'assistant', content: data.content }
-      ]);
+      setMessages(updatedMessages);
+      
+      // Auto-save chat if we have an active chat ID
+      if (activeChatId && !isNewChat) {
+        saveMessageToHistory(assistantMessage);
+      } else if (isNewChat && onSaveChat) {
+        // For a new chat, extract a title from the first user message
+        const title = userMessage.content.slice(0, 30) + (userMessage.content.length > 30 ? '...' : '');
+        onSaveChat(title);
+        
+        // After saving, this is no longer a new chat
+        // The parent component should update the isNewChat prop
+      }
     } catch (error) {
       console.error('Failed to get response:', error);
       setMessages(prev => [
@@ -56,6 +95,41 @@ export function AiTutorChat() {
       setIsLoading(false);
     }
   }
+  
+  const saveMessageToHistory = (newMessage: { role: 'user' | 'assistant', content: string }) => {
+    if (typeof window === 'undefined') return;
+    
+    const updatedMessages = [...messages, newMessage];
+    setMessages(updatedMessages);
+    
+    const savedChats = JSON.parse(localStorage.getItem('aiAssistantChats') || '[]');
+    
+    let updatedChats;
+    const existingChatIndex = savedChats.findIndex((chat: any) => chat.id === activeChatId);
+    
+    if (existingChatIndex >= 0) {
+      // Update existing chat
+      updatedChats = [...savedChats];
+      updatedChats[existingChatIndex] = {
+        ...updatedChats[existingChatIndex],
+        messages: updatedMessages
+      };
+    } else {
+      // Create new chat
+      updatedChats = [
+        {
+          id: activeChatId,
+          title: updatedMessages[1]?.content.slice(0, 30) + '...' || 'New Chat',
+          date: new Date().toLocaleDateString(),
+          time: new Date().toLocaleTimeString(),
+          messages: updatedMessages
+        },
+        ...savedChats
+      ];
+    }
+    
+    localStorage.setItem('aiAssistantChats', JSON.stringify(updatedChats));
+  };
 
   return (
     <div className="minimalist-card flex flex-col h-[600px] rounded-lg overflow-hidden">

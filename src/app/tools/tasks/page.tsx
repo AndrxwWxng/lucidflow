@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { KanbanBoard } from "@/components/kanban/board";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
@@ -10,7 +11,8 @@ import {
   Tag,
   Filter, 
   Clock, 
-  CheckSquare
+  CheckSquare,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { 
@@ -21,17 +23,113 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface TaskTag {
+  id: string;
+  name: string;
+  color: string;
+}
 
 export default function TasksPage() {
-  // Task stats - these would be calculated from actual task data in a real app
-  const taskStats = {
-    total: 12,
-    completed: 5,
-    inProgress: 3,
-    todo: 4,
-    completionRate: 42,
+  const [taskView, setTaskView] = useState("all");
+  const [tags, setTags] = useState<TaskTag[]>([]);
+  const [newTagName, setNewTagName] = useState("");
+  const [newTagColor, setNewTagColor] = useState("blue");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [showTagDialog, setShowTagDialog] = useState(false);
+  
+  const availableColors = [
+    { name: "red", class: "bg-red-500/10 text-red-500" },
+    { name: "blue", class: "bg-blue-500/10 text-blue-500" },
+    { name: "green", class: "bg-green-500/10 text-green-500" },
+    { name: "purple", class: "bg-purple-500/10 text-purple-500" },
+    { name: "yellow", class: "bg-yellow-500/10 text-yellow-500" },
+    { name: "pink", class: "bg-pink-500/10 text-pink-500" },
+    { name: "cyan", class: "bg-cyan-500/10 text-cyan-500" },
+  ];
+  
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const savedTags = localStorage.getItem('studyTaskTags');
+    if (savedTags) {
+      try {
+        setTags(JSON.parse(savedTags));
+      } catch (e) {
+        console.error("Failed to parse tags:", e);
+      }
+    } else {
+      const defaultTags = [
+        { id: "1", name: "Math", color: "red" },
+        { id: "2", name: "Physics", color: "blue" },
+        { id: "3", name: "Chemistry", color: "green" },
+        { id: "4", name: "History", color: "purple" },
+        { id: "5", name: "Literature", color: "yellow" },
+      ];
+      setTags(defaultTags);
+      localStorage.setItem('studyTaskTags', JSON.stringify(defaultTags));
+    }
+  }, []);
+  
+  const addTag = () => {
+    if (!newTagName.trim() || typeof window === 'undefined') return;
+    
+    const newTag: TaskTag = {
+      id: Date.now().toString(),
+      name: newTagName.trim(),
+      color: newTagColor
+    };
+    
+    const updatedTags = [...tags, newTag];
+    setTags(updatedTags);
+    localStorage.setItem('studyTaskTags', JSON.stringify(updatedTags));
+    
+    setNewTagName("");
+    setShowTagDialog(false);
   };
+  
+  const deleteTag = (tagId: string) => {
+    if (typeof window === 'undefined') return;
+    
+    const updatedTags = tags.filter(tag => tag.id !== tagId);
+    setTags(updatedTags);
+    localStorage.setItem('studyTaskTags', JSON.stringify(updatedTags));
+    setSelectedTags(selectedTags.filter(id => id !== tagId));
+  };
+  
+  const toggleTagSelection = (tagId: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tagId) ? prev.filter(id => id !== tagId) : [...prev, tagId]
+    );
+  };
+  
+  const getColorClass = (colorName: string) => {
+    return availableColors.find(c => c.name === colorName)?.class || "bg-primary/10 text-primary";
+  };
+  
+  const getTaskStats = () => {
+    const stats = {
+      total: 12,
+      completed: 5,
+      inProgress: 3,
+      todo: 4,
+      completionRate: 42,
+    };
+    
+    return stats;
+  };
+  
+  const taskStats = getTaskStats();
   
   return (
     <div className="max-w-6xl mx-auto">
@@ -46,7 +144,7 @@ export default function TasksPage() {
               <Filter size={14} />
               Filter
             </Button>
-            <Select defaultValue="all">
+            <Select value={taskView} onValueChange={setTaskView}>
               <SelectTrigger className="w-[140px] h-9">
                 <SelectValue placeholder="View" />
               </SelectTrigger>
@@ -66,7 +164,6 @@ export default function TasksPage() {
           </div>
         </div>
         
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <Card className="border-white/10 bg-background/50">
             <CardContent className="p-4 flex items-center gap-4">
@@ -118,7 +215,6 @@ export default function TasksPage() {
         </div>
       </div>
       
-      {/* Main Kanban Board */}
       <Card className="border-white/10">
         <CardHeader className="pb-0">
           <CardTitle className="text-lg font-medium">Task Board</CardTitle>
@@ -130,32 +226,78 @@ export default function TasksPage() {
         </CardContent>
       </Card>
       
-      {/* Additional features */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <Card className="border-white/10 col-span-2">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between py-5">
             <CardTitle className="text-base font-medium">Study Task Tags</CardTitle>
+            <Dialog open={showTagDialog} onOpenChange={setShowTagDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 gap-1">
+                  <Plus size={14} />
+                  Add Tag
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create New Tag</DialogTitle>
+                  <DialogDescription>
+                    Add a new tag to categorize your study tasks.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Tag Name</label>
+                    <Input 
+                      value={newTagName} 
+                      onChange={e => setNewTagName(e.target.value)} 
+                      placeholder="e.g., Biology"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Tag Color</label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableColors.map(color => (
+                        <button
+                          key={color.name}
+                          type="button"
+                          onClick={() => setNewTagColor(color.name)}
+                          className={`w-8 h-8 rounded-full ${color.class} ${
+                            newTagColor === color.name ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : ''
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowTagDialog(false)}>Cancel</Button>
+                  <Button onClick={addTag}>Create Tag</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              <div className="px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> Math
-              </div>
-              <div className="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> Physics
-              </div>
-              <div className="px-3 py-1 bg-green-500/10 text-green-500 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> Chemistry
-              </div>
-              <div className="px-3 py-1 bg-purple-500/10 text-purple-500 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> History
-              </div>
-              <div className="px-3 py-1 bg-yellow-500/10 text-yellow-500 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> Literature
-              </div>
-              <div className="px-3 py-1 bg-background/50 border border-white/10 rounded-full text-xs flex items-center">
-                <Tag size={12} className="mr-1" /> Add Tag...
-              </div>
+              {tags.map(tag => (
+                <div 
+                  key={tag.id} 
+                  className={`px-3 py-1 ${getColorClass(tag.color)} rounded-full text-xs flex items-center cursor-pointer ${
+                    selectedTags.includes(tag.id) ? 'ring-1 ring-primary' : ''
+                  }`}
+                  onClick={() => toggleTagSelection(tag.id)}
+                >
+                  <Tag size={12} className="mr-1" /> {tag.name}
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteTag(tag.id);
+                    }}
+                    className="ml-2 opacity-70 hover:opacity-100"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
@@ -207,7 +349,7 @@ export default function TasksPage() {
               </div>
             </div>
             
-            <Button variant="link" className="w-full mt-4 text-xs">
+            <Button variant="link" className="w-full mt-4 text-xs" onClick={() => window.location.href = '/tools/statistics'}>
               View Full Analytics
             </Button>
           </CardContent>

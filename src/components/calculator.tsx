@@ -61,7 +61,7 @@ export function Calculator() {
     setHistory([])
   }
 
-  const useFromHistory = (historyItem: string) => {
+  const applyHistoryItem = (historyItem: string) => {
     const parts = historyItem.split(' = ')
     if (parts.length === 2) {
       setDisplay(parts[1])
@@ -71,42 +71,42 @@ export function Calculator() {
 
   return (
     <div className="flex gap-4">
-      <div className="flex-1 space-y-4">
+      <div className="flex-1 space-y-3">
         <div className="glass-card rounded-xl overflow-hidden">
-          <div className="text-right text-3xl font-mono font-semibold text-primary p-3 h-16 flex items-center justify-end">
+          <div className="text-right text-3xl font-mono font-semibold text-primary p-2 h-14 flex items-center justify-end">
             {display}
           </div>
-          <div className="text-right text-xs font-mono text-foreground/60 px-3 pb-2 h-5 overflow-hidden">
+          <div className="text-right text-xs font-mono text-foreground/60 px-3 pb-1 h-4 overflow-hidden">
             {equation}
           </div>
         </div>
         
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-1.5">
           <Button
             variant="outline"
             onClick={handleClear}
-            className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-none font-medium"
+            className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-none font-medium h-10"
           >
             AC
           </Button>
           <Button
             variant="outline"
             onClick={handleBackspace}
-            className="bg-primary/5 hover:bg-primary/10 border-none"
+            className="bg-primary/5 hover:bg-primary/10 border-none h-10"
           >
             <ArrowLeft size={16} />
           </Button>
           <Button
             variant="outline"
             onClick={() => handleOperator('%')}
-            className="bg-primary/5 hover:bg-primary/10 border-none"
+            className="bg-primary/5 hover:bg-primary/10 border-none h-10"
           >
             %
           </Button>
           <Button
             variant="outline"
             onClick={() => handleOperator('/')}
-            className="bg-primary/5 hover:bg-primary/10 border-none font-medium"
+            className="bg-primary/5 hover:bg-primary/10 border-none font-medium h-10"
           >
             ÷
           </Button>
@@ -116,7 +116,7 @@ export function Calculator() {
               key={btn}
               variant="outline"
               onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium h-10`}
             >
               {btn === '*' ? '×' : btn}
             </Button>
@@ -127,7 +127,7 @@ export function Calculator() {
               key={btn}
               variant="outline"
               onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium h-10`}
             >
               {btn}
             </Button>
@@ -138,7 +138,7 @@ export function Calculator() {
               key={btn}
               variant="outline"
               onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium h-10`}
             >
               {btn}
             </Button>
@@ -147,20 +147,20 @@ export function Calculator() {
           <Button
             variant="outline"
             onClick={() => handleNumber('0')}
-            className="col-span-2 bg-background/50 hover:bg-background/80 border-none font-medium"
+            className="col-span-2 bg-background/50 hover:bg-background/80 border-none font-medium h-10"
           >
             0
           </Button>
           <Button
             variant="outline"
             onClick={() => handleNumber('.')}
-            className="bg-background/50 hover:bg-background/80 border-none font-medium"
+            className="bg-background/50 hover:bg-background/80 border-none font-medium h-10"
           >
             .
           </Button>
           <Button
             onClick={handleEqual}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium h-10"
           >
             =
           </Button>
@@ -169,7 +169,7 @@ export function Calculator() {
       
       {/* Side History */}
       <div className="w-56 glass-card rounded-xl p-4 hidden md:block">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <h3 className="text-sm font-medium">History</h3>
           {history.length > 0 && (
             <Button 
@@ -184,17 +184,17 @@ export function Calculator() {
         </div>
         
         {history.length === 0 ? (
-          <div className="py-4 text-center text-xs text-foreground/40">
+          <div className="py-3 text-center text-xs text-foreground/40">
             No calculations yet
           </div>
         ) : (
-          <div className="space-y-1 max-h-[350px] overflow-y-auto pr-1">
+          <div className="space-y-1 max-h-[250px] overflow-y-auto pr-1">
             {history.map((item, index) => (
               <Button
                 key={index}
                 variant="ghost"
-                onClick={() => useFromHistory(item)}
-                className="w-full justify-between text-xs py-2 h-auto text-left font-mono"
+                onClick={() => applyHistoryItem(item)}
+                className="w-full justify-between text-xs py-1.5 h-auto text-left font-mono"
               >
                 <span className="truncate">{item}</span>
               </Button>

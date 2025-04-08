@@ -357,16 +357,16 @@ export default function Dashboard() {
                       </div>
                       <div className="space-y-2">
                         <Button variant="outline" className="w-full justify-start text-left">
-                          <AlertCircle size={14} className="mr-2" /> I'm feeling unmotivated
+                          <AlertCircle size={14} className="mr-2" /> I&apos;m feeling unmotivated
                         </Button>
                         <Button variant="outline" className="w-full justify-start text-left">
-                          <AlertCircle size={14} className="mr-2" /> I don't understand the material
+                          <AlertCircle size={14} className="mr-2" /> I don&apos;t understand the material
                         </Button>
                         <Button variant="outline" className="w-full justify-start text-left">
                           <AlertCircle size={14} className="mr-2" /> I need a study plan
                         </Button>
                         <Button variant="outline" className="w-full justify-start text-left">
-                          <AlertCircle size={14} className="mr-2" /> I'm feeling anxious about my exam
+                          <AlertCircle size={14} className="mr-2" /> I&apos;m feeling anxious about my exam
                         </Button>
                       </div>
                     </div>

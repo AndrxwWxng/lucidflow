@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { Select } from './ui/select'
@@ -57,19 +57,42 @@ export function StudyPlanner() {
   const [showGoalForm, setShowGoalForm] = useState(false)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const savedSessions = localStorage.getItem('studySessions');
     const savedGoals = localStorage.getItem('studyGoals');
     
     if (savedSessions) {
-      setSessions(JSON.parse(savedSessions));
+      try {
+        setSessions(JSON.parse(savedSessions));
+      } catch (e) {
+        console.error("Failed to parse sessions:", e);
+      }
     }
     
     if (savedGoals) {
-      setGoals(JSON.parse(savedGoals));
+      try {
+        setGoals(JSON.parse(savedGoals));
+      } catch (e) {
+        console.error("Failed to parse goals:", e);
+      }
     }
   }, []);
 
+  // Move this function to be wrapped in useCallback before it's used in useEffect
+  const getTotalCompletedMinutes = useCallback(() => {
+    return sessions
+      .filter(session => session.completed)
+      .reduce((total, session) => total + session.duration, 0);
+  }, [sessions]);
+  
+  const getTotalPlannedMinutes = () => {
+    return sessions.reduce((total, session) => total + session.duration, 0);
+  }
+
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     localStorage.setItem('studySessions', JSON.stringify(sessions));
     
     const stats: {[key: string]: {minutes: number, sessions: number}} = {};
@@ -102,7 +125,7 @@ export function StudyPlanner() {
       setGoals(updatedGoals);
       localStorage.setItem('studyGoals', JSON.stringify(updatedGoals));
     }
-  }, [sessions]);
+  }, [sessions, getTotalCompletedMinutes, goals]);
 
   const addSession = () => {
     if (!subject.trim()) return;
@@ -140,7 +163,7 @@ export function StudyPlanner() {
   }
   
   const addGoal = () => {
-    if (!goalTitle.trim()) return;
+    if (!goalTitle.trim() || typeof window === 'undefined') return;
     
     const newGoal: StudyGoal = {
       id: Date.now().toString(),
@@ -163,6 +186,8 @@ export function StudyPlanner() {
   }
   
   const deleteGoal = (id: string) => {
+    if (typeof window === 'undefined') return;
+    
     const updatedGoals = goals.filter(g => g.id !== id);
     setGoals(updatedGoals);
     localStorage.setItem('studyGoals', JSON.stringify(updatedGoals));
@@ -200,16 +225,6 @@ export function StudyPlanner() {
     } else {
       return [];
     }
-  }
-
-  const getTotalPlannedMinutes = () => {
-    return sessions.reduce((total, session) => total + session.duration, 0);
-  }
-
-  const getTotalCompletedMinutes = () => {
-    return sessions
-      .filter(session => session.completed)
-      .reduce((total, session) => total + session.duration, 0);
   }
 
   return (

@@ -45,8 +45,16 @@ export default function ToolsPage() {
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {tools.map((tool) => (
-          <Link key={tool.id} href={`/tools/${tool.id}`}>
+        {tools.map((tool, index) => (
+          <Link 
+            key={tool.id} 
+            href={`/tools/${tool.id}`}
+            className={`${
+              tools.length % 3 === 1 && index === tools.length - 1 
+                ? 'lg:col-start-2' 
+                : ''
+            }`}
+          >
             <Card className="border-white/10 hover:border-primary/20 hover:bg-primary/5 transition-all cursor-pointer group h-full">
               <CardContent className="p-6 flex flex-col items-center text-center">
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors text-primary">
