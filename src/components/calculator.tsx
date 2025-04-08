@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Button } from './ui/button'
+import { ArrowLeft, Trash2 } from 'lucide-react'
 
 export function Calculator() {
   const [display, setDisplay] = useState('0')
@@ -20,14 +21,12 @@ export function Calculator() {
 
   const handleEqual = () => {
     try {
-      // Use Function instead of eval for better security
       const calculatedResult = new Function('return ' + equation)();
       const result = Number(calculatedResult).toFixed(2).replace(/\.00$/, '');
       setDisplay(result.toString())
       setEquation(result.toString())
       
-      // Add to history
-      setHistory(prev => [equation + ' = ' + result, ...prev].slice(0, 5))
+      setHistory(prev => [equation + ' = ' + result, ...prev].slice(0, 10))
     } catch (error) {
       setDisplay('Error')
       setEquation('')
@@ -46,11 +45,9 @@ export function Calculator() {
       return
     }
     
-    // Remove the last character
     const newEquation = equation.slice(0, -1)
     setEquation(newEquation)
     
-    // Update display
     const lastSpace = newEquation.lastIndexOf(' ')
     if (lastSpace !== -1) {
       const lastPart = newEquation.slice(lastSpace + 1)
@@ -60,120 +57,151 @@ export function Calculator() {
     }
   }
 
+  const clearHistory = () => {
+    setHistory([])
+  }
+
+  const useFromHistory = (historyItem: string) => {
+    const parts = historyItem.split(' = ')
+    if (parts.length === 2) {
+      setDisplay(parts[1])
+      setEquation(parts[1])
+    }
+  }
+
   return (
-    <div className="space-y-4">
-      {/* Calculator Display */}
-      <div className="rounded-lg overflow-hidden">
-        <div className="text-right text-2xl font-mono font-semibold text-primary p-2">
-          {display}
-        </div>
-        <div className="text-right text-xs font-mono text-foreground/60 px-2 pb-2 h-4 overflow-hidden">
-          {equation}
-        </div>
-      </div>
-      
-      {/* Calculator Keypad */}
-      <div className="grid grid-cols-4 gap-1.5">
-        {/* First row */}
-        <Button
-          variant="outline"
-          onClick={handleClear}
-          className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-none"
-        >
-          AC
-        </Button>
-        <Button
-          variant="outline"
-          onClick={handleBackspace}
-          className="bg-primary/5 hover:bg-primary/10 border-none"
-        >
-          ←
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => handleOperator('%')}
-          className="bg-primary/5 hover:bg-primary/10 border-none"
-        >
-          %
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => handleOperator('/')}
-          className="bg-primary/5 hover:bg-primary/10 border-none"
-        >
-          ÷
-        </Button>
-        
-        {/* Number pad and operators */}
-        {['7', '8', '9', '*'].map((btn, i) => (
-          <Button
-            key={btn}
-            variant="outline"
-            onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-            className={`${btn.match(/\d/) ? 'bg-background hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none`}
-          >
-            {btn === '*' ? '×' : btn}
-          </Button>
-        ))}
-        
-        {['4', '5', '6', '-'].map(btn => (
-          <Button
-            key={btn}
-            variant="outline"
-            onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-            className={`${btn.match(/\d/) ? 'bg-background hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none`}
-          >
-            {btn}
-          </Button>
-        ))}
-        
-        {['1', '2', '3', '+'].map(btn => (
-          <Button
-            key={btn}
-            variant="outline"
-            onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
-            className={`${btn.match(/\d/) ? 'bg-background hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none`}
-          >
-            {btn}
-          </Button>
-        ))}
-        
-        {/* Last row */}
-        <Button
-          variant="outline"
-          onClick={() => handleNumber('0')}
-          className="col-span-2 bg-background hover:bg-background/80 border-none"
-        >
-          0
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => handleNumber('.')}
-          className="bg-background hover:bg-background/80 border-none"
-        >
-          .
-        </Button>
-        <Button
-          onClick={handleEqual}
-          className="bg-primary hover:bg-primary/90 text-primary-foreground"
-        >
-          =
-        </Button>
-      </div>
-      
-      {/* History (collapsible) */}
-      {history.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-white/10">
-          <div className="text-xs text-foreground/60 mb-1">History</div>
-          <div className="space-y-1">
-            {history.map((item, index) => (
-              <div key={index} className="text-xs text-right font-mono">
-                {item}
-              </div>
-            ))}
+    <div className="flex gap-4">
+      <div className="flex-1 space-y-4">
+        <div className="glass-card rounded-xl overflow-hidden">
+          <div className="text-right text-3xl font-mono font-semibold text-primary p-3 h-16 flex items-center justify-end">
+            {display}
+          </div>
+          <div className="text-right text-xs font-mono text-foreground/60 px-3 pb-2 h-5 overflow-hidden">
+            {equation}
           </div>
         </div>
-      )}
+        
+        <div className="grid grid-cols-4 gap-2">
+          <Button
+            variant="outline"
+            onClick={handleClear}
+            className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-none font-medium"
+          >
+            AC
+          </Button>
+          <Button
+            variant="outline"
+            onClick={handleBackspace}
+            className="bg-primary/5 hover:bg-primary/10 border-none"
+          >
+            <ArrowLeft size={16} />
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => handleOperator('%')}
+            className="bg-primary/5 hover:bg-primary/10 border-none"
+          >
+            %
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => handleOperator('/')}
+            className="bg-primary/5 hover:bg-primary/10 border-none font-medium"
+          >
+            ÷
+          </Button>
+          
+          {['7', '8', '9', '*'].map((btn, i) => (
+            <Button
+              key={btn}
+              variant="outline"
+              onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+            >
+              {btn === '*' ? '×' : btn}
+            </Button>
+          ))}
+          
+          {['4', '5', '6', '-'].map(btn => (
+            <Button
+              key={btn}
+              variant="outline"
+              onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+            >
+              {btn}
+            </Button>
+          ))}
+          
+          {['1', '2', '3', '+'].map(btn => (
+            <Button
+              key={btn}
+              variant="outline"
+              onClick={() => btn.match(/\d/) ? handleNumber(btn) : handleOperator(btn)}
+              className={`${btn.match(/\d/) ? 'bg-background/50 hover:bg-background/80' : 'bg-primary/5 hover:bg-primary/10'} border-none font-medium`}
+            >
+              {btn}
+            </Button>
+          ))}
+          
+          <Button
+            variant="outline"
+            onClick={() => handleNumber('0')}
+            className="col-span-2 bg-background/50 hover:bg-background/80 border-none font-medium"
+          >
+            0
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => handleNumber('.')}
+            className="bg-background/50 hover:bg-background/80 border-none font-medium"
+          >
+            .
+          </Button>
+          <Button
+            onClick={handleEqual}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+          >
+            =
+          </Button>
+        </div>
+      </div>
+      
+      {/* Side History */}
+      <div className="w-56 glass-card rounded-xl p-4 hidden md:block">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-medium">History</h3>
+          {history.length > 0 && (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={clearHistory}
+              className="h-6 w-6 rounded-full text-destructive/70 hover:text-destructive hover:bg-destructive/10"
+            >
+              <Trash2 size={14} />
+            </Button>
+          )}
+        </div>
+        
+        {history.length === 0 ? (
+          <div className="py-4 text-center text-xs text-foreground/40">
+            No calculations yet
+          </div>
+        ) : (
+          <div className="space-y-1 max-h-[350px] overflow-y-auto pr-1">
+            {history.map((item, index) => (
+              <Button
+                key={index}
+                variant="ghost"
+                onClick={() => useFromHistory(item)}
+                className="w-full justify-between text-xs py-2 h-auto text-left font-mono"
+              >
+                <span className="truncate">{item}</span>
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

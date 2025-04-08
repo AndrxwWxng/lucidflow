@@ -41,7 +41,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-primary/20 blur-sm rounded-full animate-pulse"></div>
               <Brain size={32} className="text-primary relative animate-pulse-glow" />
             </div>
-            <h1 className="text-3xl font-bold gradient-text font-manjari">lucidflow</h1>
+            <h1 className="mt-2 text-2xl font-bold gradient-text font-manjari">lucidflow</h1>
           </div>
           <div className="flex items-center gap-4">
             <nav className="hidden md:flex items-center space-x-1">

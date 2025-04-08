@@ -9,6 +9,8 @@ import { Calculator } from "@/components/calculator";
 import { StudyPlanner } from "@/components/study-planner";
 import { Notes } from "@/components/notes"; 
 import { StudyTools } from "@/components/study-tools";
+import { Sidebar } from "@/components/sidebar";
+import { MotivationalQuotes } from "@/components/motivational-quotes";
 import Link from "next/link";
 import {
   Brain,
@@ -78,57 +80,9 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      {/* Sidebar - Redesigned to be more elegant */}
-      <aside className={`h-full border-r border-white/10 ${compactSidebar ? 'w-[68px]' : 'w-[220px]'} transition-all duration-300 bg-card/30 backdrop-blur-md flex flex-col shrink-0`}>
-        <div className="p-4 flex items-center justify-between border-b border-white/10">
-          <div className="flex items-center gap-2">
-            <Brain size={24} className="text-primary animate-pulse-slow" />
-            {!compactSidebar && <h1 className="text-lg font-bold gradient-text">LucidFlow</h1>}
-          </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setCompactSidebar(!compactSidebar)}
-            className="h-6 w-6 rounded-full opacity-70 hover:opacity-100"
-          >
-            <PanelLeft size={14} className={`transition-transform duration-200 ${compactSidebar ? 'rotate-180' : ''}`} />
-          </Button>
-        </div>
-        
-        <div className="flex-1 overflow-y-auto py-3">
-          <nav className="space-y-0.5 px-2">
-            <NavItem href="/dashboard" icon={<Gauge />} label="Dashboard" compact={compactSidebar} />
-            <NavItem href="/tools/timer" icon={<Clock />} label="Focus Timer" compact={compactSidebar} />
-            <NavItem href="/tools/tasks" icon={<Layers />} label="Study Tasks" compact={compactSidebar} />
-            <NavItem href="/tools/ai-assistant" icon={<Bot />} label="AI Assistant" compact={compactSidebar} />
-            <NavItem href="/tools/notes" icon={<FileText />} label="Notes" compact={compactSidebar} />
-            <NavItem href="/tools/planner" icon={<Calendar />} label="Planner" compact={compactSidebar} />
-            <NavItem href="/tools/music" icon={<Music />} label="Study Music" compact={compactSidebar} />
-            <NavItem href="/tools/calculator" icon={<CalcIcon />} label="Calculator" compact={compactSidebar} />
-            <NavItem href="/tools" icon={<Blocks />} label="More Tools" compact={compactSidebar} />
-            
-            <div className="pt-3 pb-1">
-              {!compactSidebar && <div className="px-3 text-xs font-semibold text-foreground/40 uppercase tracking-wider">Insights</div>}
-              <div className={compactSidebar ? 'border-t border-white/10 my-2' : ''}></div>
-            </div>
-            
-            <NavItem href="#stats" icon={<BarChart3 />} label="Statistics" compact={compactSidebar} />
-            <NavItem href="#progress" icon={<GraduationCap />} label="Progress" compact={compactSidebar} />
-          </nav>
-        </div>
-        
-        <div className="p-3 border-t border-white/10 flex items-center justify-between">
-          <Link href="/" className={`flex items-center gap-2 text-xs opacity-70 hover:opacity-100 transition-opacity ${compactSidebar ? 'justify-center w-full' : ''}`}>
-            <ChevronLeft size={14} />
-            {!compactSidebar && <span>Back to Home</span>}
-          </Link>
-          {!compactSidebar && <ModeToggle />}
-        </div>
-      </aside>
+      <Sidebar />
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Modern header with blur effect */}
         <header className="bg-background/10 backdrop-blur-xl border-b border-white/10 z-10 shrink-0">
           <div className="max-w-full h-12 px-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
@@ -153,10 +107,8 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto">
           <main className="max-w-full p-4 md:p-5">
-            {/* Welcome Card with Stats - more minimal and sleek */}
             <div className="mb-6 glass-card relative overflow-hidden rounded-xl">
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
               <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-300/5 rounded-full blur-3xl translate-y-1/3 -translate-x-1/3"></div>
@@ -208,7 +160,6 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              {/* Left Column */}
               <div className="lg:col-span-3">
                 <section id="timer" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
@@ -226,16 +177,19 @@ export default function Dashboard() {
                   <SpotifyPlayer />
                 </section>
 
-                <section id="calculator" className="glass-card p-4 rounded-xl motion-safe:animate-fade-in animation-delay-200">
+                <section id="calculator" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-200">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
                     <CalcIcon size={16} className="text-primary" />
                     <span>Calculator</span>
                   </h2>
                   <Calculator />
                 </section>
+                
+                <section id="quotes" className="h-[450px] rounded-xl motion-safe:animate-fade-in animation-delay-400">
+                  <MotivationalQuotes />
+                </section>
               </div>
 
-              {/* Middle Column */}
               <div className="lg:col-span-9">
                 <section id="tasks" className="glass-card p-4 mb-5 rounded-xl motion-safe:animate-fade-in animation-delay-150">
                   <h2 className="text-base font-medium mb-3 flex items-center gap-2">
@@ -273,7 +227,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Additional Tools Section - Redesigned to be more modern and useful */}
             <section id="tools" className="mt-6 glass-card p-5 rounded-xl motion-safe:animate-fade-in animation-delay-400">
               <h2 className="text-lg font-medium mb-4 flex items-center">
                 <Blocks size={18} className="text-primary mr-2" />
@@ -504,7 +457,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Tool Modal */}
       <Dialog open={toolModal.isOpen} onOpenChange={(open) => !open && closeToolModal()}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
@@ -514,6 +466,22 @@ export default function Dashboard() {
             </DialogTitle>
           </DialogHeader>
           {toolModal.content}
+        </DialogContent>
+      </Dialog>
+      
+      <Dialog>
+        <DialogTrigger id="flashcardsDialogTrigger" className="hidden">Open Flashcards</DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen size={18} className="text-primary" />
+              Flashcards
+            </DialogTitle>
+            <DialogDescription>
+              Create and study flashcards to boost your memory retention
+            </DialogDescription>
+          </DialogHeader>
+          <Flashcards />
         </DialogContent>
       </Dialog>
     </div>
