@@ -1,11 +1,12 @@
 "use client"
 import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, closestCorners } from '@dnd-kit/core'
 import { SortableContext, arrayMove } from '@dnd-kit/sortable'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../ui/button'
 import { KanbanColumn } from './column'
 import { KanbanTask } from './task'
-import { ArrowLeft, PlusIcon } from 'lucide-react'
+import { ArrowLeft, PlusIcon, ListTodo, Layers, Trash2 } from 'lucide-react'
+import { Input } from '../ui/input'
 
 type TaskStatus = 'todo' | 'inProgress' | 'done'
 
@@ -13,12 +14,31 @@ interface Task {
   id: string
   title: string
   status: TaskStatus
+  createdAt: number
+  priority?: 'low' | 'medium' | 'high'
 }
 
 export function KanbanBoard() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [newTaskTitle, setNewTaskTitle] = useState('')
   const [activeTask, setActiveTask] = useState<Task | null>(null)
+
+  // Load tasks from localStorage on mount
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('kanban-tasks')
+    if (savedTasks) {
+      try {
+        setTasks(JSON.parse(savedTasks))
+      } catch (e) {
+        console.error('Failed to parse tasks from localStorage', e)
+      }
+    }
+  }, [])
+
+  // Save tasks to localStorage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem('kanban-tasks', JSON.stringify(tasks))
+  }, [tasks])
 
   const handleDragStart = (event: DragStartEvent) => {
     const task = tasks.find(t => t.id === event.active.id)
@@ -61,7 +81,9 @@ export function KanbanBoard() {
     const newTask: Task = {
       id: Date.now().toString(),
       title: newTaskTitle,
-      status: 'todo'
+      status: 'todo',
+      createdAt: Date.now(),
+      priority: 'medium'
     }
 
     setTasks([...tasks, newTask])
@@ -86,26 +108,74 @@ export function KanbanBoard() {
     }))
   }
 
+  const deleteTask = (taskId: string) => {
+    setTasks(tasks.filter(task => task.id !== taskId))
+  }
+
+  const updateTaskPriority = (taskId: string, priority: 'low' | 'medium' | 'high') => {
+    setTasks(tasks.map(task => 
+      task.id === taskId ? { ...task, priority } : task
+    ))
+  }
+
+  const getTotalTasks = () => tasks.length
+  const getCompletedTasks = () => tasks.filter(t => t.status === 'done').length
+  const getCompletionPercentage = () => {
+    if (getTotalTasks() === 0) return 0
+    return Math.round((getCompletedTasks() / getTotalTasks()) * 100)
+  }
+
+  const clearCompletedTasks = () => {
+    setTasks(tasks.filter(task => task.status !== 'done'))
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="glass-effect p-4 rounded-lg">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Add a new task..."
-            className="flex-1 rounded-md bg-secondary px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            onKeyPress={(e) => e.key === 'Enter' && addTask()}
-          />
-          <Button onClick={addTask} className="flex items-center gap-2">
-            <PlusIcon size={16} />
-            Add Task
-          </Button>
+      {/* Task Input and Stats */}
+      <div className="glass-card p-4 rounded-lg">
+        <div className="flex flex-col md:flex-row gap-3 mb-4">
+          <div className="flex flex-1 gap-2">
+            <Input
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              placeholder="Add a new study task..."
+              className="flex-1"
+              onKeyDown={(e) => e.key === 'Enter' && addTask()}
+            />
+            <Button onClick={addTask} className="flex items-center gap-1 whitespace-nowrap">
+              <PlusIcon size={16} />
+              Add Task
+            </Button>
+          </div>
+          
+          {getTotalTasks() > 0 && (
+            <div className="flex items-center gap-4 text-sm text-foreground/70 whitespace-nowrap">
+              <span className="flex items-center gap-1">
+                <Layers size={14} className="text-primary" />
+                {getTotalTasks()} tasks
+              </span>
+              <span className="flex items-center gap-1">
+                <ListTodo size={14} className="text-primary" />
+                {getCompletionPercentage()}% complete
+              </span>
+              {getCompletedTasks() > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={clearCompletedTasks}
+                  className="text-xs px-2 h-8 flex items-center gap-1 hover:text-destructive transition-colors"
+                >
+                  <Trash2 size={14} />
+                  Clear Done
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       
-      <div className="flex gap-4">
+      {/* Kanban Columns */}
+      <div className="flex flex-col md:flex-row gap-4">
         <DndContext 
           collisionDetection={closestCorners}
           onDragStart={handleDragStart}
@@ -113,21 +183,28 @@ export function KanbanBoard() {
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <div className="flex gap-4 w-full">
-            {(['todo', 'inProgress', 'done'] as const).map(status => (
+          <div className="flex flex-col md:flex-row gap-4 w-full">
+            {([
+              { id: 'todo', title: 'To Study', icon: '📚' },
+              { id: 'inProgress', title: 'Studying', icon: '🧠' },
+              { id: 'done', title: 'Completed', icon: '✅' }
+            ] as const).map(column => (
               <KanbanColumn 
-                key={status}
-                id={status}
-                title={status === 'todo' ? 'To Do' : status === 'inProgress' ? 'In Progress' : 'Done'}
-                tasks={tasks.filter(t => t.status === status)}
+                key={column.id}
+                id={column.id}
+                title={column.title}
+                icon={column.icon}
+                tasks={tasks.filter(t => t.status === column.id)}
                 onStatusChange={(taskId) => {
                   const statusOrder = ['todo', 'inProgress', 'done']
-                  const currentIndex = statusOrder.indexOf(status)
+                  const currentIndex = statusOrder.indexOf(column.id)
                   const nextStatus = statusOrder[currentIndex + 1]
                   if (nextStatus) updateTaskStatus(taskId, nextStatus as TaskStatus)
                 }}
                 onMoveBack={moveTaskBack}
-                showMoveBack={status !== 'todo'}
+                onDelete={deleteTask}
+                onUpdatePriority={updateTaskPriority}
+                showMoveBack={column.id !== 'todo'}
               />
             ))}
           </div>
