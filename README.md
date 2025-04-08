@@ -28,6 +28,47 @@ Check out the live version of LucidFlow here:
 
 ➡️ **https://lucidflow.vercel.app/** ⬅️
 
+## 🏁 Getting Started
+
+To get a local copy up and running, follow these simple steps.
+
+### Prerequisites
+
+*   Node.js (v18 or later recommended)
+*   npm, yarn, or pnpm
+*   Groq API Key (required for the AI Study Assistant feature - see Groq documentation)
+
+### Installation
+
+1.  Clone the repo:
+    ```bash
+    git clone https://github.com/your-username/lucidflow.git # Replace with your repo URL
+    cd lucidflow
+    ```
+2.  Install NPM packages:
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    ```
+3.  Set up environment variables:
+    *   Create a `.env.local` file in the root directory.
+    *   Add your Groq API key: `GROQ_API_KEY=your_api_key_here`
+
+### Running the Development Server
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result 💻.
+
 ## 🤔 How to Use
 
 1.  Start a focused study session using the **Focus Timer**.
