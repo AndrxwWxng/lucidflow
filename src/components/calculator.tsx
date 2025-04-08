@@ -32,7 +32,7 @@ export function Calculator() {
 
       const calculatedResult = new Function('return ' + calculationString)()
 
-      let result = parseFloat(Number(calculatedResult).toFixed(10))
+      const result = parseFloat(Number(calculatedResult).toFixed(10))
       const resultString = result.toString()
 
       setDisplay(resultString)
@@ -99,7 +99,7 @@ export function Calculator() {
   const getButtonClasses = (
     type: 'number' | 'operator' | 'special' | 'equal' | 'clear',
   ) => {
-    let baseClasses =
+    const baseClasses =
       'border-none font-medium h-12 px-6 text-lg rounded-lg'
     switch (type) {
       case 'number':
